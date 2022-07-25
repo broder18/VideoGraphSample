@@ -1,0 +1,10 @@
+EXPORTS
+    gsInitialize
+    gsUninitialize
+    gsClose
+    gsOpenRefact
+    gsGetLastError
+    gsSetInputNetwork
+    gsResizeRenderer
+    gsGetStatistics
+    gsResetStatistics
