@@ -10,11 +10,18 @@ using System.Windows.Forms;
 
 namespace VideoGraphSample
 {
-    public partial class Form1 : Form
+    public partial class RendererConrainerForm : Form
     {
-        public Form1()
+        private int _oldLen;
+        /*public RendererConrainerForm()
         {
             InitializeComponent();
+        }*/
+
+        public RendererConrainerForm(string name)
+        {
+            InitializeComponent(name);
+            _oldLen = this.Size.Width;
         }
     }
 }

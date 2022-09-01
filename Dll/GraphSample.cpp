@@ -86,12 +86,19 @@ extern "C" void EXPORT gsClose()
 
 extern "C" BOOL EXPORT gsOpenRefact(GS_SETTINGSRefact *pSettings)
 {
-    SetErrorMessage(std::to_string(sizeof(GS_SETTINGSRefact)).c_str());
-    if (pSettings->Size != sizeof(GS_SETTINGSRefact)) return FALSE;
+    //SetErrorMessage(std::to_string(sizeof(GS_SETTINGSRefact)).c_str());
+    //SetErrorMessage(std::to_string(pSettings->Size).c_str());
+    //USES_CONVERSION;
+    //SetErrorMessage(CT2A(pSettings->fileName));
+    //SetErrorMessage(std::to_string(sizeof(pSettings)).c_str());
+    //if (pSettings->Size != 20) return FALSE;
+    USES_CONVERSION;
+    if (sizeof(*pSettings) != sizeof(GS_SETTINGSRefact)) return FALSE;
 
     gsClose();
 
     ClearErrorMessage();
+    
     try
     {
         SetErrorMessage("new CGraph() failed");
@@ -100,7 +107,7 @@ extern "C" BOOL EXPORT gsOpenRefact(GS_SETTINGSRefact *pSettings)
         return TRUE;
     }
     CATCHALL
-
+    
     gsClose();
     return FALSE;
 }
@@ -110,7 +117,7 @@ extern "C" LPCTSTR EXPORT gsGetLastError()
     return LastError.c_str();
 }
 
-extern "C" BOOL EXPORT gsSetInputNetwork(INPUT_NETWORK *pInNet)
+/*extern "C" BOOL EXPORT gsSetInputNetwork(INPUT_NETWORK * pInNet)
 {
     try
     {
@@ -119,7 +126,7 @@ extern "C" BOOL EXPORT gsSetInputNetwork(INPUT_NETWORK *pInNet)
     }
     CATCHALL
     return FALSE;
-}
+}*/
 
 extern "C" BOOL EXPORT gsResizeRenderer(HWND hContainerWnd)
 {

@@ -11,12 +11,6 @@ typedef struct tagTEXT_PARAMS
     WORD y;
 } TEXT_PARAMS;
 
-typedef struct tagINPUT_NETWORK
-{
-    DWORD MulticastIP;
-    WORD MulticastPort;
-} INPUT_NETWORK;
-
 typedef struct tagHCONTAINER_WND
 {
     HWND hContainerWnd0;
@@ -38,7 +32,7 @@ typedef struct tagPIDS
 typedef struct tagGS_SettingsRefact
 {
     DWORD Size;
-    INPUT_NETWORK InNet;
+    char* fileName;
     HCONTAINER_WND hWnd;
     PIDS V_Pids;
 } GS_SETTINGSRefact;

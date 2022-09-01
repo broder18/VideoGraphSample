@@ -4,7 +4,7 @@
 
 #include "Defines.h"
 #include <tchar.h>
-#include <dshow.h>0
+#include <dshow.h>
 #include <atlbase.h>
 #include <initguid.h>
 #include <dvdmedia.h>
@@ -30,9 +30,13 @@ class GRAPH_CONTROL : private CGraph
     /* link between the actual renderer window and its parent window */
     map<HWND, CComPtr<IVideoWindow>> RendererMap;
     CComPtr<IPMTPvtDataSettings> pIPMTPvtDataSettings;
+    //CComPtr<TSPUSHFILESOURCE> pTSPushFileSource;
+    
 
-    void AddUDPLocalSource();
-    void AddRTPSource(INPUT_NETWORK *pInNet);
+
+    void AddTSPushSource(LPCOLESTR* pszFileName);
+    //void AddUDPLocalSource();
+    //void AddRTPSource(INPUT_NETWORK *pInNet);
     void AddDemuxRefact(PIDS *Pids);
     void AddDemuxPinVideoStream(WORD Pid, int Idx);
     void AddVideoDecoderRefact();
@@ -52,7 +56,7 @@ public:
     {
     }
 
-    void SetRTPSource(INPUT_NETWORK* pInNet);
+    //void SetRTPSource(INPUT_NETWORK* pInNet);
     void BuildGraphRefact(GS_SETTINGSRefact *pSettings);
     void PlaceRendererRefact(HWND hContainerWnd) const;
     void GetStatistics(PIDSTATISTICS *pStat);

@@ -4,7 +4,6 @@ EXPORTS
     gsClose
     gsOpenRefact
     gsGetLastError
-    gsSetInputNetwork
     gsResizeRenderer
     gsGetStatistics
     gsResetStatistics

@@ -30,6 +30,20 @@ void CHECK_HR(HRESULT Hr, const char *pErrMsg)
     if(FAILED(Hr)) throw Exception(Hr, pErrMsg);
 }
 
+
+//------------------------------------------------------------------------
+// MPEG-2 demultiplexer
+//
+void GRAPH_CONTROL::AddTSPushSource(LPCOLESTR *pszFileName)
+{
+    AddFilter(CLSID_TSPUSHFILESOURCE, TsPushSourceName);
+    CComPtr<IFileSourceFilter> pTSPushFileSource = QI<IFileSourceFilter>(TsPushSourceName, IID_IFileSourceFilter);
+    CMediaType pmt;
+    PrepareMediaType(&pmt);
+    CHECK_HR(pTSPushFileSource->Load(*pszFileName, &pmt), "TSPushFileSource Load() function failed");
+}
+
+
 //------------------------------------------------------------------------
 // MPEG-2 demultiplexer
 //
@@ -40,7 +54,7 @@ void GRAPH_CONTROL::AddDemuxRefact(PIDS *Pids)
     AddFilter(CLSID_MPEG2Demultiplexer, DemuxName);
 
     /* demux input must (?) be connected before IMPEG2PIDMap interface is available */
-    Connect(UDPLocalSourceName, DemuxName);
+    Connect(TsPushSourceName, DemuxName);
     AddDemuxPinVideoStream(Pids->pidV0, 0);
     AddDemuxPinVideoStream(Pids->pidV1, 1);
     AddDemuxPinVideoStream(Pids->pidV2, 2);
@@ -133,19 +147,19 @@ void GRAPH_CONTROL::AddVideoDecoderRefact()
 //------------------------------------------------------------------------
 // Add UDP Local Source filter
 //
-void GRAPH_CONTROL::AddUDPLocalSource()
+/*void GRAPH_CONTROL::AddUDPLocalSource()
 {
     AddFilter(CLSID_UDPLOCALSOURCE, UDPLocalSourceName);
 
     CComPtr<IUDPLocalSourceCtrl> pIUDPLocalSourceCtrl = QI<IUDPLocalSourceCtrl>(UDPLocalSourceName, IID_IUDPLocalSourceCtrl);
     LocalPort = pIUDPLocalSourceCtrl->GetBoundPort();
-}
+}*/
 
 //------------------------------------------------------------------------
 // Add 3DDCT RTP Source filter, obtain its interfaces, and make the necessary adjustments
 // Note: UDPLocalSource must be already added to the graph
 //
-void GRAPH_CONTROL::SetRTPSource(INPUT_NETWORK *pInNet)
+/*void GRAPH_CONTROL::SetRTPSource(INPUT_NETWORK* pInNet)
 {
     RTPSOURCE_SETTINGS Settings;
     Settings.IP = pInNet->MulticastIP;
@@ -160,7 +174,7 @@ void GRAPH_CONTROL::AddRTPSource(INPUT_NETWORK *pInNet)
 {
     AddFilter(CLSID_RTPSOURCE, RTPSourceName);
     SetRTPSource(pInNet);
-}
+}*/
 
 
 //---------------------------------------------------------------------------
@@ -268,8 +282,12 @@ void GRAPH_CONTROL::ResetStatistics()
 
 void GRAPH_CONTROL::BuildGraphRefact(GS_SETTINGSRefact *pSettings)
 {
-    AddUDPLocalSource();
-    AddRTPSource(&pSettings->InNet);
+    //AddUDPLocalSource();
+    //AddRTPSource(&pSettings->InNet);
+    USES_CONVERSION;
+    char* pFileChar = pSettings->fileName;
+    LPCOLESTR pFileCOLE = A2COLE(pFileChar);
+    AddTSPushSource(&pFileCOLE);
     AddDemuxRefact(&pSettings->V_Pids);
     AddVideoDecoderRefact();
     AddVideoRendererRefact(&pSettings->hWnd);
