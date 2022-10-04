@@ -1,4 +1,5 @@
-﻿
+﻿using System.Drawing;
+
 namespace VideoGraphSample
 {
     partial class MainForm
@@ -30,6 +31,11 @@ namespace VideoGraphSample
         /// </summary>
         private void InitializeComponent()
         {
+            //System.Console.WriteLine(Properties.Settings.Default.WindowLocation);
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.Location = Properties.Settings.Default.WindowLocation;
+            //this.Size = Properties.Settings.Default.WindowSize;
+            //this.StartPosition = FormStartPosition.CenterParent;
             this.positionY_Numeric = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();

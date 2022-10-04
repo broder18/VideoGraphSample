@@ -37,7 +37,7 @@ namespace VideoGraphSample.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("300, 300")]
+        [global::System.Configuration.DefaultSettingValueAttribute("521, 222")]
         public global::System.Drawing.Size WindowSize {
             get {
                 return ((global::System.Drawing.Size)(this["WindowSize"]));

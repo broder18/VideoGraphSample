@@ -12,6 +12,8 @@
         private void SaveSettings()
         {
             Properties.Settings.Default.Save();
+            System.Console.WriteLine(Properties.Settings.Default.WindowSize);
+            System.Console.WriteLine(Properties.Settings.Default.WindowLocation);
         }
 
         private void SaveTextAlpha(ushort alpha_Numeric)

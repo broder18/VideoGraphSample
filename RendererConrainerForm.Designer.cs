@@ -1,4 +1,6 @@
 ﻿
+using System.Windows.Forms;
+
 namespace VideoGraphSample
 {
     partial class RendererConrainerForm
@@ -27,23 +29,23 @@ namespace VideoGraphSample
         {
             switch (this.Name)
             {
-                case "x0085":
+                case "85":
                     Properties.Settings.Default.WinSize_x0085 = this.Size;
                     Properties.Settings.Default.WinLocation_x0085 = this.Location;
                     break;
-                case "x0086":
+                case "86":
                     Properties.Settings.Default.WinSize_x0086 = this.Size;
                     Properties.Settings.Default.WinLocation_x0086 = this.Location;
                     break;
-                case "x0087":
+                case "87":
                     Properties.Settings.Default.WinSize_x0087 = this.Size;
                     Properties.Settings.Default.WinLocation_x0087 = this.Location;
                     break;
-                case "x0088":
+                case "88":
                     Properties.Settings.Default.WinSize_x0088 = this.Size;
                     Properties.Settings.Default.WinLocation_x0088 = this.Location;
                     break;
-                case "x0089":
+                case "89":
                     Properties.Settings.Default.WinSize_x0089 = this.Size;
                     Properties.Settings.Default.WinLocation_x0089 = this.Location;
                     break;
@@ -56,47 +58,52 @@ namespace VideoGraphSample
         {
             switch (this.Name)
             {
-                case "x0085":
+                case "85":
                     this.Location = Properties.Settings.Default.WinLocation_x0085;
                     this.Size = Properties.Settings.Default.WinSize_x0085;
                     break;
-                case "x0086":
+                case "86":
                     this.Location = Properties.Settings.Default.WinLocation_x0086;
                     this.Size = Properties.Settings.Default.WinSize_x0086;
                     break;
-                case "x0087":
+                case "87":
                     this.Location = Properties.Settings.Default.WinLocation_x0087;
                     this.Size = Properties.Settings.Default.WinSize_x0087;
                     break;
-                case "x0088":
+                case "88":
                     this.Location = Properties.Settings.Default.WinLocation_x0088;
                     this.Size = Properties.Settings.Default.WinSize_x0088;
                     break;
-                case "x0089":
+                case "89":
                     this.Location = Properties.Settings.Default.WinLocation_x0089;
                     this.Size = Properties.Settings.Default.WinSize_x0089;
                     break;
             }
         }
 
+        private void RendererConrainerForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SavePosition();
+        }
+
         /// <summary>
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent(string name)
+        private void InitializeComponent(ushort name)
         {
             this.SuspendLayout();
             // 
             // RendererConrainerForm
             // 
-
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RendererConrainerForm_FormClosing);
             this.WindowState = System.Windows.Forms.FormWindowState.Normal;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.ClientSize = new System.Drawing.Size(960, 960);
+            //this.ClientSize = new System.Drawing.Size(960, 960);
             this.MinimumSize = new System.Drawing.Size(200, 200);
-            this.Text = name;
-            this.Name = name;
-
+            this.Text = "x00" + name.ToString("X2");
+            this.Name = name.ToString("X2");
+            this.Set_Params();
             this.ResumeLayout(false);
 
         }

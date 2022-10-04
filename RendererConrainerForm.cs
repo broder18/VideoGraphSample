@@ -12,16 +12,10 @@ namespace VideoGraphSample
 {
     public partial class RendererConrainerForm : Form
     {
-        private int _oldLen;
-        /*public RendererConrainerForm()
-        {
-            InitializeComponent();
-        }*/
 
-        public RendererConrainerForm(string name)
+        public RendererConrainerForm(ushort name)
         {
             InitializeComponent(name);
-            _oldLen = this.Size.Width;
         }
     }
 }

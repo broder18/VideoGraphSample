@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 
 namespace VideoGraphSample
@@ -42,7 +44,6 @@ namespace VideoGraphSample
         {
             public uint Size;
             public string filePath;
-            //System.Text.StringBuilder filePath;
             public Hwnds hContainerWnds;
             public Pids VideoPid;
         }
@@ -101,34 +102,39 @@ namespace VideoGraphSample
             }
         }
 
-        public static void Open(string path, ushort[] pids, IntPtr[] hWnds)
+        public static void Open(string path, Dictionary<ushort, bool> map_pids, RendererConrainerForm[] _renderers)
         {
+            if (_renderers == null) return;
             var settings = new GsSettings();
             settings.Size = (uint)Marshal.SizeOf(settings);
             settings.filePath = path;
-            Console.WriteLine(path);
-            Add_Pids(ref settings, pids);
-            Add_HWNDS(ref settings, hWnds);
+            AddItemStruct(_renderers, ref settings);
+            Console.WriteLine(settings.VideoPid.pid0);
             if (!NativeMethods.gsOpenRefact(ref settings)) throw new Exception("gsOpenrefact() failed: " + GetLastError());
+        }  
+        
+
+        private static void AddItemStruct(RendererConrainerForm[] _renderers, ref GsSettings settings)
+        {
+            foreach(var item in _renderers)
+            {
+                if (AddPidHWND(ref settings.VideoPid.pid0, ref settings.hContainerWnds.hwnd0, item)) continue;
+                if (AddPidHWND(ref settings.VideoPid.pid1, ref settings.hContainerWnds.hwnd1, item)) continue;
+                if (AddPidHWND(ref settings.VideoPid.pid2, ref settings.hContainerWnds.hwnd2, item)) continue;
+                if (AddPidHWND(ref settings.VideoPid.pid3, ref settings.hContainerWnds.hwnd3, item)) continue;
+                if (AddPidHWND(ref settings.VideoPid.pid4, ref settings.hContainerWnds.hwnd4, item)) continue;
+            }
         }
 
-        private static void Add_Pids(ref GsSettings settings, ushort[] pids)
+        private static bool AddPidHWND(ref ushort pid, ref IntPtr hwnd, RendererConrainerForm item)
         {
-            settings.VideoPid.pid0 = pids[0];
-            settings.VideoPid.pid1 = pids[1];
-            settings.VideoPid.pid2 = pids[2];
-            settings.VideoPid.pid3 = pids[3];
-            settings.VideoPid.pid4 = pids[4];
+            if (pid != 0) return false;
+            pid = Convert.ToUInt16(item.Name, 16);
+            hwnd = item.Handle;
+            return true;
         }
 
-        private static void Add_HWNDS(ref GsSettings settings, IntPtr[] hWnds)
-        {
-            settings.hContainerWnds.hwnd0 = hWnds[0];
-            settings.hContainerWnds.hwnd1 = hWnds[1];
-            settings.hContainerWnds.hwnd2 = hWnds[2];
-            settings.hContainerWnds.hwnd3 = hWnds[3]; 
-            settings.hContainerWnds.hwnd4 = hWnds[4];
-        }
+
 
         public static void Close()
         {

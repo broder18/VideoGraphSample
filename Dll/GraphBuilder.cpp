@@ -55,13 +55,20 @@ void GRAPH_CONTROL::AddDemuxRefact(PIDS *Pids)
 
     /* demux input must (?) be connected before IMPEG2PIDMap interface is available */
     Connect(TsPushSourceName, DemuxName);
-    AddDemuxPinVideoStream(Pids->pidV0, 0);
-    AddDemuxPinVideoStream(Pids->pidV1, 1);
-    AddDemuxPinVideoStream(Pids->pidV2, 2);
-    AddDemuxPinVideoStream(Pids->pidV3, 3);
-    AddDemuxPinVideoStream(Pids->pidV4, 4);
+    if(CheckPidNull(Pids->pidV0))AddDemuxPinVideoStream(Pids->pidV0, 0);
+    if(CheckPidNull(Pids->pidV1))AddDemuxPinVideoStream(Pids->pidV1, 1);
+    if(CheckPidNull(Pids->pidV2))AddDemuxPinVideoStream(Pids->pidV2, 2);
+    if(CheckPidNull(Pids->pidV3))AddDemuxPinVideoStream(Pids->pidV3, 3);
+    if(CheckPidNull(Pids->pidV4))AddDemuxPinVideoStream(Pids->pidV4, 4);
     AddDemuxPMTPin();
 }
+
+BOOL GRAPH_CONTROL::CheckPidNull(WORD pid)
+{
+    if (pid == 0) return FALSE;
+    return TRUE;
+}
+
 
 void GRAPH_CONTROL::AddDemuxPinVideoStream(WORD Pid, int Idx)
 {
@@ -181,11 +188,17 @@ void GRAPH_CONTROL::AddRTPSource(INPUT_NETWORK *pInNet)
 //Add Renderer 
 void GRAPH_CONTROL::AddVideoRendererRefact(HCONTAINER_WND* hWindows)
 {
-    ConnectRenderer(VideoDecoderName0, VideoRendererName0, hWindows->hContainerWnd0);
-    ConnectRenderer(VideoDecoderName1, VideoRendererName1, hWindows->hContainerWnd1);
-    ConnectRenderer(VideoDecoderName2, VideoRendererName2, hWindows->hContainerWnd2);
-    ConnectRenderer(VideoDecoderName3, VideoRendererName3, hWindows->hContainerWnd3);
-    ConnectRenderer(VideoDecoderName4, VideoRendererName4, hWindows->hContainerWnd4);
+    if(CheckHWNDNull(hWindows->hContainerWnd0))ConnectRenderer(VideoDecoderName0, VideoRendererName0, hWindows->hContainerWnd0);
+    if(CheckHWNDNull(hWindows->hContainerWnd1))ConnectRenderer(VideoDecoderName1, VideoRendererName1, hWindows->hContainerWnd1);
+    if(CheckHWNDNull(hWindows->hContainerWnd2))ConnectRenderer(VideoDecoderName2, VideoRendererName2, hWindows->hContainerWnd2);
+    if(CheckHWNDNull(hWindows->hContainerWnd3))ConnectRenderer(VideoDecoderName3, VideoRendererName3, hWindows->hContainerWnd3);
+    if(CheckHWNDNull(hWindows->hContainerWnd4))ConnectRenderer(VideoDecoderName4, VideoRendererName4, hWindows->hContainerWnd4);
+}
+
+BOOL GRAPH_CONTROL::CheckHWNDNull(HWND hwnd)
+{
+    if (hwnd == 0) return FALSE;
+    return TRUE;
 }
 
 void GRAPH_CONTROL::ConnectRenderer(LPCTSTR VideoDecoderName, LPCTSTR VideoRendererName, HWND hContainerWnd)
@@ -282,8 +295,6 @@ void GRAPH_CONTROL::ResetStatistics()
 
 void GRAPH_CONTROL::BuildGraphRefact(GS_SETTINGSRefact *pSettings)
 {
-    //AddUDPLocalSource();
-    //AddRTPSource(&pSettings->InNet);
     USES_CONVERSION;
     char* pFileChar = pSettings->fileName;
     LPCOLESTR pFileCOLE = A2COLE(pFileChar);
@@ -295,3 +306,5 @@ void GRAPH_CONTROL::BuildGraphRefact(GS_SETTINGSRefact *pSettings)
 
     Start();
 }
+
+
