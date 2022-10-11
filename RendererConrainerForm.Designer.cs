@@ -96,14 +96,8 @@ namespace VideoGraphSample
             // 
             // RendererConrainerForm
             // 
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RendererConrainerForm_FormClosing);
-            this.WindowState = System.Windows.Forms.FormWindowState.Normal;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            //this.ClientSize = new System.Drawing.Size(960, 960);
-            this.MinimumSize = new System.Drawing.Size(200, 200);
-            this.Text = "x00" + name.ToString("X2");
+            this.ClientSize = new System.Drawing.Size(284, 261);
             this.Name = name.ToString("X2");
-            this.Set_Params();
             this.ResumeLayout(false);
 
         }

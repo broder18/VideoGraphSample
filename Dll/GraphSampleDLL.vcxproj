@@ -98,6 +98,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CMediaSeekingProxy.h" />
     <ClInclude Include="Defaults.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="Filters.h" />
@@ -110,6 +111,7 @@
     <ClInclude Include="MediaTypes.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CMediaSeekingProxy.cpp" />
     <ClCompile Include="Filters.cpp" />
     <ClCompile Include="GraphBuilder.cpp" />
     <ClCompile Include="LibGraph\LibGraph.cpp" />

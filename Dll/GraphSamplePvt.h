@@ -31,6 +31,7 @@ class GRAPH_CONTROL : private CGraph
     map<HWND, CComPtr<IVideoWindow>> RendererMap;
     CComPtr<IPMTPvtDataSettings> pIPMTPvtDataSettings;
     CComPtr<IFileSourceFilter> pTSPushFileSource;
+    CComPtr<IMediaSeeking> pIMediaSeeking;
     //CComPtr<TSPUSHFILESOURCE> pTSPushFileSource;
     
 
@@ -41,7 +42,7 @@ class GRAPH_CONTROL : private CGraph
     void AddDemuxRefact(PIDS *Pids);
     BOOL CheckPidNull(WORD pid);
     void AddDemuxPinVideoStream(WORD Pid, int Idx);
-    void AddVideoDecoderRefact();
+    void AddVideoDecoderRefact(PIDS *Pids);
     void AddFFDSHOWDecoder(LPCTSTR VideoDecoderName, LPCTSTR outputId);
     void AddLAVDecoder(LPCTSTR VideoDecoderName, LPCTSTR outputId);
     void AddVideoRendererRefact(HCONTAINER_WND *hWindows);
@@ -49,10 +50,11 @@ class GRAPH_CONTROL : private CGraph
     void ConnectRenderer(LPCTSTR VideoDecoderName, LPCTSTR VideoRendererName, HWND hContainerWnd);
     void SetupRendererRefact(HWND hContainerWnd) const;
     void AddDemuxPMTPin();
-    void AddPMTPvtData();
+    void AddPMTPvtData(PIDS *Pids);
     void ConnectPMTPvtData(LPCTSTR VideoRendererName, int PMTRendererID);
     void SetAlphaPMT(int alpha);
     void SetPositionPMT(int x, int y);
+    void InitSlider(HWND hwnd);
 
 public:
     GRAPH_CONTROL() : LocalPort{ 0 } 

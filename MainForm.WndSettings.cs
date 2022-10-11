@@ -17,16 +17,33 @@ namespace VideoGraphSample
         }
 
         private void CreateWndRender()
-        {             
-            if (map_pids.Count == 0) return;
-            _renderers = new RendererConrainerForm[map_pids.Count];
+        {
+            byte count = 0;
+            CalculatePids(ref count);
+            if (count == 0) return;
+            CreateWndRenderArray(count);
+        }
 
-            ushort id_renderer = 0;
-            foreach(var item in map_pids)
+        private void CalculatePids(ref byte count)
+        {
+            foreach (var item in map_pids)
             {
-                _renderers[id_renderer] = new RendererConrainerForm(item.Key);
-                _renderers[id_renderer].Show();
-                id_renderer++;
+                if (item.Value == true) count++;
+            }
+        }
+
+        private void CreateWndRenderArray(byte count)
+        {
+            _renderers = new RendererConrainerForm[count];
+            ushort id_renderer = 0;
+            foreach (var item in map_pids)
+            {
+                if (item.Value)
+                {
+                    _renderers[id_renderer] = new RendererConrainerForm(item.Key);
+                    _renderers[id_renderer].Show();
+                    id_renderer++;
+                }
             }
         }
 

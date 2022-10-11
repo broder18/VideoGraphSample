@@ -129,7 +129,7 @@ void GRAPH_CONTROL::AddLAVDecoder(LPCTSTR VideoDecoderName, LPCTSTR outputId)
     Connect(DemuxName, VideoDecoderName, outputId);
 }
 
-void GRAPH_CONTROL::AddVideoDecoderRefact()
+void GRAPH_CONTROL::AddVideoDecoderRefact(PIDS *pids)
 {
 #if 0
     /* LAV Video Decoder works pretty bad with the latest NVidia updates making video jerky */
@@ -142,11 +142,11 @@ void GRAPH_CONTROL::AddVideoDecoderRefact()
 
 #else
 
-    AddFFDSHOWDecoder(VideoDecoderName0, "V0");
-    AddFFDSHOWDecoder(VideoDecoderName1, "V1");
-    AddFFDSHOWDecoder(VideoDecoderName2, "V2");
-    AddFFDSHOWDecoder(VideoDecoderName3, "V3");
-    AddFFDSHOWDecoder(VideoDecoderName4, "V4");
+    if(CheckPidNull(pids->pidV0))AddFFDSHOWDecoder(VideoDecoderName0, "V0");
+    if(CheckPidNull(pids->pidV1))AddFFDSHOWDecoder(VideoDecoderName1, "V1");
+    if(CheckPidNull(pids->pidV2))AddFFDSHOWDecoder(VideoDecoderName2, "V2");
+    if(CheckPidNull(pids->pidV3))AddFFDSHOWDecoder(VideoDecoderName3, "V3");
+    if(CheckPidNull(pids->pidV4))AddFFDSHOWDecoder(VideoDecoderName4, "V4");
 
 #endif
 }
@@ -243,16 +243,16 @@ void GRAPH_CONTROL::PlaceRendererRefact(HWND hContainerWnd) const
 //
 
 
-void GRAPH_CONTROL::AddPMTPvtData()
+void GRAPH_CONTROL::AddPMTPvtData(PIDS *pids)
  {
     AddFilter(CLSID_PMTPvtData, PMTPvtDataName);
     pIPMTPvtDataSettings = QI<IPMTPvtDataSettings>(PMTPvtDataName, IID_IPMTPvtDataSettings);
     Connect(DemuxName, PMTPvtDataName, "PMT");
-    ConnectPMTPvtData(VideoRendererName0, 0);
-    ConnectPMTPvtData(VideoRendererName1, 1);
-    ConnectPMTPvtData(VideoRendererName2, 2);
-    ConnectPMTPvtData(VideoRendererName3, 3);
-    ConnectPMTPvtData(VideoRendererName4, 4);
+    if(CheckPidNull(pids->pidV0))ConnectPMTPvtData(VideoRendererName0, 0);
+    if(CheckPidNull(pids->pidV1))ConnectPMTPvtData(VideoRendererName1, 1);
+    if(CheckPidNull(pids->pidV2))ConnectPMTPvtData(VideoRendererName2, 2);
+    if(CheckPidNull(pids->pidV3))ConnectPMTPvtData(VideoRendererName3, 3);
+    if(CheckPidNull(pids->pidV4))ConnectPMTPvtData(VideoRendererName4, 4);
 }
 
 void GRAPH_CONTROL::ConnectPMTPvtData(LPCTSTR VideoRendererName, int PMT_ID)
@@ -293,6 +293,13 @@ void GRAPH_CONTROL::ResetStatistics()
     CHECK_HR(pIUDPStatistics->ResetStatistics(), "IUDPStatistics::ResetStatistics() failed");
 }
 
+/*void GRAPH_CONTROL::InitSlider(HWND hwnd)
+{
+    hScroll = GetDlgItem(hwnd, IDC_SLIDER1);
+    EnableWindow(hScroll, FALSE);
+    SendMessage(hScroll, TBM_SETRANGE, TRUE, MAKELONG(0, 100));
+}*/
+
 void GRAPH_CONTROL::BuildGraphRefact(GS_SETTINGSRefact *pSettings)
 {
     USES_CONVERSION;
@@ -300,10 +307,9 @@ void GRAPH_CONTROL::BuildGraphRefact(GS_SETTINGSRefact *pSettings)
     LPCOLESTR pFileCOLE = A2COLE(pFileChar);
     AddTSPushSource(&pFileCOLE);
     AddDemuxRefact(&pSettings->V_Pids);
-    AddVideoDecoderRefact();
+    AddVideoDecoderRefact(&pSettings->V_Pids);
     AddVideoRendererRefact(&pSettings->hWnd);
-    AddPMTPvtData();
-
+    AddPMTPvtData(&pSettings->V_Pids);
     Start();
 }
 

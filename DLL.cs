@@ -109,7 +109,6 @@ namespace VideoGraphSample
             settings.Size = (uint)Marshal.SizeOf(settings);
             settings.filePath = path;
             AddItemStruct(_renderers, ref settings);
-            Console.WriteLine(settings.VideoPid.pid0);
             if (!NativeMethods.gsOpenRefact(ref settings)) throw new Exception("gsOpenrefact() failed: " + GetLastError());
         }  
         

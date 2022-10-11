@@ -48,6 +48,9 @@
     <ClInclude Include="MediaTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CMediaSeekingProxy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LibGraph\LibGraph.cpp">
@@ -63,6 +66,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GraphSample.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CMediaSeekingProxy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
