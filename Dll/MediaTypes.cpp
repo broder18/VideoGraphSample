@@ -1,4 +1,4 @@
-#include "GraphSamplePvt.h"
+#include "BIONVideoPlayerPvt.h"
 #include "MediaTypes.h"
 #include "Defaults.h"
 

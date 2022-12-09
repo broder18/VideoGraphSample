@@ -9,9 +9,22 @@ DEFINE_GUID(CLSID_PMTPvtData, 0xcd68cb5, 0x6163, 0x4d80, 0x8a, 0xaf, 0xe6, 0x98,
 // {A3552889-8BF2-49D2-B23B-A538E1FB4F39}
 DEFINE_GUID(IID_IPMTPvtDataSettings, 0xa3552889, 0x8bf2, 0x49d2, 0xb2, 0x3b, 0xa5, 0x38, 0xe1, 0xfb, 0x4f, 0x39);
 
+DEFINE_GUID(IID_IPMTPvtDataSettings2, 0xb91e28fd, 0x8411, 0x40c9, 0xa2, 0x60, 0xd6, 0x55, 0x1, 0xfb, 0x1a, 0x23);
+
 DECLARE_INTERFACE_(IPMTPvtDataSettings, IUnknown)
 {
+#ifndef PMTPVTDATA_EXPORTS
+    __declspec(deprecated("Please use IPMTPvtDataSettings2::SetRendererEx"))
+#endif
     STDMETHOD(SetRenderer)  (THIS_ int Idx, IVMRMixerBitmap9 *pIVMRMixerBitmap9) PURE;
     STDMETHOD(SetAlpha)     (THIS_ int Alpha100) PURE;
     STDMETHOD(SetPosition)  (THIS_ int X, int Y) PURE;
+};
+
+DECLARE_INTERFACE_(IPMTPvtDataSettings2, IPMTPvtDataSettings)
+{
+    STDMETHOD(SetRendererEx)    (THIS_ int Idx, int Pid, IVMRMixerBitmap9 *pIVMRMixerBitmap9) PURE;
+    STDMETHOD(SetTxtColor)      (THIS_ COLORREF Clr) PURE;
+    STDMETHOD(SetBkgColor)      (THIS_ COLORREF Clr) PURE;
+    STDMETHOD(EnableTelemetry)  (THIS_ int Enable) PURE;
 };

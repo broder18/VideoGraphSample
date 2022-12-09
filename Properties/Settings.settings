@@ -1,51 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="VideoGraphSample.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
   <Profiles />
-  <Settings>
-    <Setting Name="WindowLocation" Type="System.Drawing.Point" Scope="User">
-      <Value Profile="(Default)">0, 0</Value>
-    </Setting>
-    <Setting Name="WindowSize" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">521, 222</Value>
-    </Setting>
-    <Setting Name="WinSize_x0085" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">300, 300</Value>
-    </Setting>
-    <Setting Name="WinSize_x0086" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">300, 300</Value>
-    </Setting>
-    <Setting Name="WinSize_x0087" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">300, 300</Value>
-    </Setting>
-    <Setting Name="WinSize_x0088" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">300, 300</Value>
-    </Setting>
-    <Setting Name="WinSize_x0089" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">300, 300</Value>
-    </Setting>
-    <Setting Name="WinLocation_x0085" Type="System.Drawing.Point" Scope="User">
-      <Value Profile="(Default)">0, 0</Value>
-    </Setting>
-    <Setting Name="WinLocation_x0086" Type="System.Drawing.Point" Scope="User">
-      <Value Profile="(Default)">0, 0</Value>
-    </Setting>
-    <Setting Name="WinLocation_x0087" Type="System.Drawing.Point" Scope="User">
-      <Value Profile="(Default)">0, 0</Value>
-    </Setting>
-    <Setting Name="WinLocation_x0088" Type="System.Drawing.Point" Scope="User">
-      <Value Profile="(Default)">0, 0</Value>
-    </Setting>
-    <Setting Name="WinLocation_x0089" Type="System.Drawing.Point" Scope="User">
-      <Value Profile="(Default)">0, 0</Value>
-    </Setting>
-    <Setting Name="alpha_Text" Type="System.UInt16" Scope="User">
-      <Value Profile="(Default)">100</Value>
-    </Setting>
-    <Setting Name="positionX_Text" Type="System.UInt16" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="positionY_Text" Type="System.UInt16" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-  </Settings>
+  <Settings />
 </SettingsFile>

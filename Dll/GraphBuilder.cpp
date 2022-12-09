@@ -1,13 +1,16 @@
-#include "GraphSamplePvt.h"
+#include "BIONVideoPlayerPvt.h"
 #include <mmreg.h>
-#include <Shlwapi.h>
+//#include <Shlwapi.h>
+#include <bdaiface.h>
 #include "GraphBuilder.h"
 #include "MediaTypes.h"
 #include "Filters.h"
+#include "CAWString.h"
 
 #define GETIF(if, filt)             CComPtr<if> p##if = QI<if>(filt, IID_ ## if)
 #define GETOUTPINIF(if, filt, pin)  CComPtr<if> p##if = PinQI<if>(filt, pin, PINDIR_OUTPUT, IID_ ## if)
-#define GETCONCATLPCTSTR(str1, str2)  
+#define GETCONCATLPCTSTR(str1, str2)
+
 
 //------------------------------------------------------------------------
 // This stuff is not in strmiids.lib for Windows SDK v7.1
@@ -17,99 +20,95 @@ EXTERN_C const IID IID_IMPEG2PIDMap = __uuidof(IMPEG2PIDMap);  // NOLINT(clang-d
 //------------------------------------------------------------------------
 // Throw an exception
 //
-void __declspec(noreturn) THROW(const char *pErrMsg)
+void __declspec(noreturn) THROW(const char *p_err_msg)
 {
-    throw Exception(E_FAIL, pErrMsg);
+    throw Exception(E_FAIL, p_err_msg);
 }
 
 //------------------------------------------------------------------------
 // Check a HRESULT and throw an exception if necessary
 //
-void CHECK_HR(HRESULT Hr, const char *pErrMsg)
+void CHECK_HR(const HRESULT hr, const char *p_err_msg)
 {
-    if(FAILED(Hr)) throw Exception(Hr, pErrMsg);
+    if(FAILED(hr)) throw Exception(hr, p_err_msg);
 }
 
 
 //------------------------------------------------------------------------
 // MPEG-2 demultiplexer
 //
-void GRAPH_CONTROL::AddTSPushSource(LPCOLESTR *pszFileName)
+
+void GRAPH_CONTROL::AddTSFileSource(LPCOLESTR *psz_file_name)
 {
-    AddFilter(CLSID_TSPUSHFILESOURCE, TsPushSourceName);
-    CComPtr<IFileSourceFilter> pTSPushFileSource = QI<IFileSourceFilter>(TsPushSourceName, IID_IFileSourceFilter);
+    AddFilter(CLSID_TSFileSource, TSFileSourceName);
+    pTSPushFileSource = QI<IFileSourceFilter>(TSFileSourceName, IID_IFileSourceFilter);
     CMediaType pmt;
     PrepareMediaType(&pmt);
-    CHECK_HR(pTSPushFileSource->Load(*pszFileName, &pmt), "TSPushFileSource Load() function failed");
+    CHECK_HR(pTSPushFileSource->Load(*psz_file_name, &pmt), "TSFileSource Load() function failed");
 }
-
 
 //------------------------------------------------------------------------
 // MPEG-2 demultiplexer
 //
 
 
-void GRAPH_CONTROL::AddDemuxRefact(PIDS *Pids)
+void GRAPH_CONTROL::AddDemux(CHANNELS *p_Channels)
 {
     AddFilter(CLSID_MPEG2Demultiplexer, DemuxName);
 
     /* demux input must (?) be connected before IMPEG2PIDMap interface is available */
-    Connect(TsPushSourceName, DemuxName);
-    if(CheckPidNull(Pids->pidV0))AddDemuxPinVideoStream(Pids->pidV0, 0);
-    if(CheckPidNull(Pids->pidV1))AddDemuxPinVideoStream(Pids->pidV1, 1);
-    if(CheckPidNull(Pids->pidV2))AddDemuxPinVideoStream(Pids->pidV2, 2);
-    if(CheckPidNull(Pids->pidV3))AddDemuxPinVideoStream(Pids->pidV3, 3);
-    if(CheckPidNull(Pids->pidV4))AddDemuxPinVideoStream(Pids->pidV4, 4);
-    AddDemuxPMTPin();
-}
-
-BOOL GRAPH_CONTROL::CheckPidNull(WORD pid)
-{
-    if (pid == 0) return FALSE;
-    return TRUE;
+    Connect(TSFileSourceName, DemuxName);
+    for(int i = 0; i < p_Channels->NumVideoPids; i++)
+    {
+        AddDemuxPinVideoStream(static_cast<WORD>(p_Channels->pids[i]), i);
+    }
+    AddDemuxPMTPin(p_Channels);
 }
 
 
-void GRAPH_CONTROL::AddDemuxPinVideoStream(WORD Pid, int Idx)
+void GRAPH_CONTROL::AddDemuxPinVideoStream(const WORD pid, const int idx)
 {
     CMediaType MtV;
     PrepareMediaType(&MtV);
     GETIF(IMpeg2Demultiplexer, DemuxName);
 
-    char PinNameA[32];//Âûםוסעט ג מעהוכüםûי לועמה
-    wchar_t PinNameW[32];
-    sprintf_s(PinNameA, "V%d", Idx);
-    swprintf_s(PinNameW, L"V%d", Idx);
+    CAWString pinName("V", idx);
 
     CComPtr<IPin> pDemuxOutPinV; 
-    CHECK_HR(pIMpeg2Demultiplexer->CreateOutputPin(&MtV, PinNameW, &pDemuxOutPinV), "pIMpeg2Demultiplexer->CreateOutputPin('V') failed");
+    CHECK_HR(pIMpeg2Demultiplexer->CreateOutputPin(&MtV, pinName, &pDemuxOutPinV), "pIMpeg2Demultiplexer->CreateOutputPin('V') failed");
 
     RefreshPins(DemuxName);
 
-    GETOUTPINIF(IMPEG2PIDMap, DemuxName, PinNameA);
-    ULONG PidToMap = Pid;
+    GETOUTPINIF(IMPEG2PIDMap, DemuxName, pinName);
+    ULONG PidToMap = pid;
     CHECK_HR(pIMPEG2PIDMap->MapPID(1, &PidToMap, MEDIA_ELEMENTARY_STREAM), "IMPEG2PIDMap::MapPID() failed");
 }
 
-void GRAPH_CONTROL::AddDemuxPMTPin()
+void GRAPH_CONTROL::AddDemuxPMTPin(CHANNELS* pChannels)
 {
     CMediaType MtTS;
     PrepareMediaTypeTS(&MtTS);
     GETIF(IMpeg2Demultiplexer, DemuxName);
 
-    char PinNameA[32];
-    wchar_t PinNameW[32];
-    sprintf_s(PinNameA, "PMT");
-    swprintf_s(PinNameW, L"PMT");
+    CAWString PinName("PMT");
+    
     CComPtr<IPin> pDemuxOutPinV;
-    CHECK_HR(pIMpeg2Demultiplexer->CreateOutputPin(&MtTS, PinNameW, &pDemuxOutPinV), "pIMpeg2Demultiplexer->CreateOutputPin('PMT') failed");
+    CHECK_HR(pIMpeg2Demultiplexer->CreateOutputPin(&MtTS, PinName, &pDemuxOutPinV), "pIMpeg2Demultiplexer->CreateOutputPin('PMT') failed");
 
     RefreshPins(DemuxName);
+	
+    ULONG PMTPids[MAX_CHANNELS];
+    int actualPMTs = 0;
+	for(int i = 0; i < pChannels->NumPMTs; i++)
+	{
+        const ULONG CurPMT = pChannels->pmts[i];
+        if (CurPMT < 0x2000) PMTPids[actualPMTs++] = pChannels->pmts[i];
+	}
 
-    GETOUTPINIF(IMPEG2PIDMap, DemuxName, PinNameA);
-    ULONG PMTPids[5] = { 0x44, 0x45, 0x46, 0x47, 0x48 };
-    CHECK_HR(pIMPEG2PIDMap->MapPID(ARRAYSIZE(PMTPids), PMTPids, MEDIA_TRANSPORT_PACKET), "IMPEG2PIDMap::MapPID() failed");
+    if (actualPMTs == 0) throw Exception(E_FAIL, "No PMT PIDs");
 
+    GETOUTPINIF(IMPEG2PIDMap, DemuxName, PinName);
+    CHECK_HR(pIMPEG2PIDMap->MapPID(actualPMTs, PMTPids, MEDIA_TRANSPORT_PACKET), "IMPEG2PIDMap::MapPID() failed");
 }
 
 
@@ -117,200 +116,197 @@ void GRAPH_CONTROL::AddDemuxPMTPin()
 // Add video decoder
 //
 
-void GRAPH_CONTROL::AddFFDSHOWDecoder(LPCTSTR VideoDecoderName, LPCTSTR outputId)
-{
-    AddFilter(CLSID_ffdshowVideoDecoder, VideoDecoderName);
-    Connect(DemuxName, VideoDecoderName, outputId);
-}
-
-void GRAPH_CONTROL::AddLAVDecoder(LPCTSTR VideoDecoderName, LPCTSTR outputId)
-{
-    AddFilter(CLSID_LAVVideo, VideoDecoderName);
-    Connect(DemuxName, VideoDecoderName, outputId);
-}
-
-void GRAPH_CONTROL::AddVideoDecoderRefact(PIDS *pids)
-{
 #if 0
-    /* LAV Video Decoder works pretty bad with the latest NVidia updates making video jerky */
-
-    AddLAVDecoder(VideoDecoderName0, "V0");
-    AddLAVDecoder(VideoDecoderName1, "V1");
-    AddLAVDecoder(VideoDecoderName2, "V2");
-    AddLAVDecoder(VideoDecoderName3, "V3");
-    AddLAVDecoder(VideoDecoderName4, "V4");
-
+#define DECCLSID        CLSID_LAVVideo
 #else
-
-    if(CheckPidNull(pids->pidV0))AddFFDSHOWDecoder(VideoDecoderName0, "V0");
-    if(CheckPidNull(pids->pidV1))AddFFDSHOWDecoder(VideoDecoderName1, "V1");
-    if(CheckPidNull(pids->pidV2))AddFFDSHOWDecoder(VideoDecoderName2, "V2");
-    if(CheckPidNull(pids->pidV3))AddFFDSHOWDecoder(VideoDecoderName3, "V3");
-    if(CheckPidNull(pids->pidV4))AddFFDSHOWDecoder(VideoDecoderName4, "V4");
-
+#define DECCLSID        CLSID_ffdshowVideoDecoder
 #endif
+
+void GRAPH_CONTROL::AddVideoDecoder(CHANNELS* p_channels)
+{
+	for(int i = 0; i < p_channels->NumVideoPids; i++)
+	{
+        CAWString Decoder(VideoDecoderName, i);
+        CAWString Pin("V", i);
+
+        AddFilter(DECCLSID, Decoder);
+        Connect(DemuxName, Decoder, Pin);
+	}
 }
-
-//------------------------------------------------------------------------
-// Add UDP Local Source filter
-//
-/*void GRAPH_CONTROL::AddUDPLocalSource()
-{
-    AddFilter(CLSID_UDPLOCALSOURCE, UDPLocalSourceName);
-
-    CComPtr<IUDPLocalSourceCtrl> pIUDPLocalSourceCtrl = QI<IUDPLocalSourceCtrl>(UDPLocalSourceName, IID_IUDPLocalSourceCtrl);
-    LocalPort = pIUDPLocalSourceCtrl->GetBoundPort();
-}*/
-
-//------------------------------------------------------------------------
-// Add 3DDCT RTP Source filter, obtain its interfaces, and make the necessary adjustments
-// Note: UDPLocalSource must be already added to the graph
-//
-/*void GRAPH_CONTROL::SetRTPSource(INPUT_NETWORK* pInNet)
-{
-    RTPSOURCE_SETTINGS Settings;
-    Settings.IP = pInNet->MulticastIP;
-    Settings.Port = pInNet->MulticastPort;
-    Settings.LocalPort = LocalPort;
-
-    GETIF(IRTPSourceSettings, RTPSourceName);
-    CHECK_HR(pIRTPSourceSettings->SetSettings(&Settings), "pRTPSourceSettings->SetSettings() failed");
-}
-
-void GRAPH_CONTROL::AddRTPSource(INPUT_NETWORK *pInNet)
-{
-    AddFilter(CLSID_RTPSOURCE, RTPSourceName);
-    SetRTPSource(pInNet);
-}*/
-
 
 //---------------------------------------------------------------------------
 //Add Renderer 
-void GRAPH_CONTROL::AddVideoRendererRefact(HCONTAINER_WND* hWindows)
+void GRAPH_CONTROL::AddVideoRenderer(CHANNELS* p_Channels)
 {
-    if(CheckHWNDNull(hWindows->hContainerWnd0))ConnectRenderer(VideoDecoderName0, VideoRendererName0, hWindows->hContainerWnd0);
-    if(CheckHWNDNull(hWindows->hContainerWnd1))ConnectRenderer(VideoDecoderName1, VideoRendererName1, hWindows->hContainerWnd1);
-    if(CheckHWNDNull(hWindows->hContainerWnd2))ConnectRenderer(VideoDecoderName2, VideoRendererName2, hWindows->hContainerWnd2);
-    if(CheckHWNDNull(hWindows->hContainerWnd3))ConnectRenderer(VideoDecoderName3, VideoRendererName3, hWindows->hContainerWnd3);
-    if(CheckHWNDNull(hWindows->hContainerWnd4))ConnectRenderer(VideoDecoderName4, VideoRendererName4, hWindows->hContainerWnd4);
+    for(int i = 0; i < p_Channels->NumVideoPids; i++)
+    {
+        CAWString Decoder(VideoDecoderName, i);
+        CAWString Renderer(VideoRendererName, i);
+
+        AddFilter(CLSID_VideoMixingRenderer9, Renderer);
+        Connect(Decoder, Renderer);
+
+        HWND hContainerWnd = p_Channels->hwnds[i];
+
+        const CComPtr<IVideoWindow> pIVW = QI<IVideoWindow>(Renderer, IID_IVideoWindow);
+
+        RendererMap[hContainerWnd] = pIVW;
+        SetupRenderer(pIVW, hContainerWnd);
+        PlaceRenderer(hContainerWnd);
+    }
 }
 
-BOOL GRAPH_CONTROL::CheckHWNDNull(HWND hwnd)
+void GRAPH_CONTROL::SetupRenderer(IVideoWindow* pIVideoWindow, HWND hContainerWnd) 
 {
-    if (hwnd == 0) return FALSE;
-    return TRUE;
+    CHECK_HR(pIVideoWindow->put_Owner(reinterpret_cast<OAHWND>(hContainerWnd)), "IVideoWindow::put_Owner() failed");
+
+    long style, exStyle;
+    CHECK_HR(pIVideoWindow->get_WindowStyle(&style), "IVideoWindow::get_WindowStyle() failed");
+    CHECK_HR(pIVideoWindow->get_WindowStyleEx(&exStyle), "IVideoWindow::get_WindowStyleEx() failed");
+	
+    style &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
+    exStyle &= ~WS_EX_WINDOWEDGE;
+    CHECK_HR(pIVideoWindow->put_WindowStyle(style), "IVideoWindow::put_WindowStyle() failed");
+    CHECK_HR(pIVideoWindow->put_WindowStyleEx(exStyle), "IVideoWindow::put_WindowStyleEx() failed");
 }
 
-void GRAPH_CONTROL::ConnectRenderer(LPCTSTR VideoDecoderName, LPCTSTR VideoRendererName, HWND hContainerWnd)
+void GRAPH_CONTROL::PlaceRenderer(const HWND h_container_wnd) const
 {
-    AddFilter(CLSID_VideoMixingRenderer9, VideoRendererName);
-    Connect(VideoDecoderName, VideoRendererName);
-    RendererMap[hContainerWnd] = QI<IVideoWindow>(VideoRendererName, IID_IVideoWindow);
-    SetupRendererRefact(hContainerWnd);
-    PlaceRendererRefact(hContainerWnd);
+    const auto it = RendererMap.find(h_container_wnd);
+    if (it == RendererMap.end()) THROW("PlaceRenderer(): invalid window handle");
+
+    RECT rect;
+    if (!GetClientRect(h_container_wnd, &rect)) THROW("GetClientWindow() failed");
+
+    IVideoWindow* pIVideoWindow = it->second;
+
+    CHECK_HR(pIVideoWindow->put_Left(1), "IVideoWindow::put_Left() failed");
+    CHECK_HR(pIVideoWindow->put_Top(1), "IVideoWindow::put_Top() failed");
+    CHECK_HR(pIVideoWindow->put_Width(rect.right - rect.left - 2), "IVideoWindow::put_Width() failed");
+    CHECK_HR(pIVideoWindow->put_Height(rect.bottom - rect.top - 2), "IVideoWindow::put_Height() failed");
 }
 
-void GRAPH_CONTROL::SetupRendererRefact(HWND hContainerWnd) const
-{
-    
-    CHECK_HR(RendererMap.find(hContainerWnd)->second->put_Owner((OAHWND)hContainerWnd), "IVideoWindow::put_Owner() failed");
-
-    long Style, ExStyle;
-    CHECK_HR(RendererMap.find(hContainerWnd)->second->get_WindowStyle(&Style), "IVideoWindow::get_WindowStyle() failed");
-    CHECK_HR(RendererMap.find(hContainerWnd)->second->get_WindowStyleEx(&ExStyle), "IVideoWindow::get_WindowStyleEx() failed");
-
-    Style &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
-    ExStyle &= ~(WS_EX_WINDOWEDGE);
-    ExStyle |= WS_EX_TRANSPARENT;
-    CHECK_HR(RendererMap.find(hContainerWnd)->second->put_WindowStyle(Style), "IVideoWindow::put_WindowStyle() failed");
-    CHECK_HR(RendererMap.find(hContainerWnd)->second->put_WindowStyleEx(ExStyle), "IVideoWindow::put_WindowStyleEx() failed");
-}
-
-void GRAPH_CONTROL::PlaceRendererRefact(HWND hContainerWnd) const
-{
-    if (RendererMap.find(hContainerWnd)->first != hContainerWnd) THROW("PlaceRenderer(): invalid window handle");
-
-    RECT Rect;
-    if (!GetClientRect(hContainerWnd, &Rect)) THROW("GetClientWindow() failed");
-
-    CHECK_HR(RendererMap.find(hContainerWnd)->second->put_Left(1), "IVideoWindow::put_Left() failed");
-    CHECK_HR(RendererMap.find(hContainerWnd)->second->put_Top(1), "IVideoWindow::put_Top() failed");
-    CHECK_HR(RendererMap.find(hContainerWnd)->second->put_Width(Rect.right - Rect.left - 2), "IVideoWindow::put_Width() failed");
-    CHECK_HR(RendererMap.find(hContainerWnd)->second->put_Height(Rect.bottom - Rect.top - 2), "IVideoWindow::put_Height() failed");
-}
 //------------------------------------------------------------------------
 // PMT
 //
 
-
-void GRAPH_CONTROL::AddPMTPvtData(PIDS *pids)
+void GRAPH_CONTROL::AddPMTPvtData(CHANNELS* pChannels)
  {
     AddFilter(CLSID_PMTPvtData, PMTPvtDataName);
-    pIPMTPvtDataSettings = QI<IPMTPvtDataSettings>(PMTPvtDataName, IID_IPMTPvtDataSettings);
     Connect(DemuxName, PMTPvtDataName, "PMT");
-    if(CheckPidNull(pids->pidV0))ConnectPMTPvtData(VideoRendererName0, 0);
-    if(CheckPidNull(pids->pidV1))ConnectPMTPvtData(VideoRendererName1, 1);
-    if(CheckPidNull(pids->pidV2))ConnectPMTPvtData(VideoRendererName2, 2);
-    if(CheckPidNull(pids->pidV3))ConnectPMTPvtData(VideoRendererName3, 3);
-    if(CheckPidNull(pids->pidV4))ConnectPMTPvtData(VideoRendererName4, 4);
+    pIPMTPvtDataSettings2 = QI<IPMTPvtDataSettings2>(PMTPvtDataName, IID_IPMTPvtDataSettings2);
+    
+    for(int i = 0; i < pChannels->NumPMTs; i++)
+    {
+        const int curPMT = pChannels->pmts[i];
+        if (curPMT < 0 || curPMT > 0x1fff) continue;
+
+        GETIF(IVMRMixerBitmap9, CAWString(VideoRendererName, i));
+        CHECK_HR(pIPMTPvtDataSettings2->SetRendererEx(i, curPMT, pIVMRMixerBitmap9), "IPMTPvtDataSettings2::SetRendererEx() failed");
+    }
 }
 
-void GRAPH_CONTROL::ConnectPMTPvtData(LPCTSTR VideoRendererName, int PMT_ID)
+void GRAPH_CONTROL::SetTelemetryAlpha(const int alpha) const
 {
-    GETIF(IVMRMixerBitmap9, VideoRendererName);
-    CHECK_HR(pIPMTPvtDataSettings->SetRenderer(PMT_ID, pIVMRMixerBitmap9), "IPMTPvtDataSettings::SetRenderer() failed");
+    CHECK_HR(pIPMTPvtDataSettings2->SetAlpha(alpha), "IPMTPvtDataSettings::SetAlpha() failed");
 }
 
-void GRAPH_CONTROL::SetAlphaPMT(int alpha)
+void GRAPH_CONTROL::SetTelemetryPosition(const int x, const int y) const
 {
-    CHECK_HR(pIPMTPvtDataSettings->SetAlpha(alpha), "IPMTPvtDataSettings::SetAlpha() failed");
+    CHECK_HR(pIPMTPvtDataSettings2->SetPosition(x, y), "IPMTPvtDataSettings::SetPosition() failed");
 }
 
-void GRAPH_CONTROL::SetPositionPMT(int x, int y)
+void GRAPH_CONTROL::SetTelemetryColors(COLORREF txt_color, COLORREF bkg_color) const
 {
-    CHECK_HR(pIPMTPvtDataSettings->SetPosition(x, y), "IPMTPvtDataSettings::SetPosition() failed");
+    pIPMTPvtDataSettings2->SetBkgColor(bkg_color & 0x00ffffff);
+    pIPMTPvtDataSettings2->SetTxtColor(txt_color & 0x00ffffff);
 }
 
-void GRAPH_CONTROL::SetPMTParams(TEXT_PARAMS *pPMT)
+void GRAPH_CONTROL::EnableTelemetry(int enable) const
 {
-    SetAlphaPMT(pPMT->alpha);
-    SetPositionPMT(pPMT->x, pPMT->y);
+    pIPMTPvtDataSettings2->EnableTelemetry(enable);
 }
-
 
 //------------------------------------------------------------------------
 // Statistics
 //
-void GRAPH_CONTROL::GetStatistics(PIDSTATISTICS *pStat)
+
+void GRAPH_CONTROL::MapUnmap(const int ch, const bool map)
 {
-    GETIF(IUDPStatistics, UDPLocalSourceName);
-    CHECK_HR(pIUDPStatistics->GetStatistics(pStat), "IUDPStatistics::GetStatistics() failed");
+    if (0 <= ch && ch < MAX_CHANNELS)
+    {
+        GETOUTPINIF(IMPEG2PIDMap, DemuxName, CAWString("V", ch));
+
+        ULONG pid = UsedPids[ch];
+        if (pid < 0x2000)
+        {
+            /* we don't check for success here just because it's totally unclear what we should do when an error occurs */
+            if (map) pIMPEG2PIDMap->MapPID(1, &pid, MEDIA_ELEMENTARY_STREAM);
+            else pIMPEG2PIDMap->UnmapPID(1, &pid);
+        }
+    }
 }
 
-void GRAPH_CONTROL::ResetStatistics()
+
+void GRAPH_CONTROL::GetPositions(DWORD* percent)
 {
-    GETIF(IUDPStatistics, UDPLocalSourceName);
-    CHECK_HR(pIUDPStatistics->ResetStatistics(), "IUDPStatistics::ResetStatistics() failed");
+    CComPtr<ITSFileSource> pTSPushFileSourceSeeking = QI<ITSFileSource>(TSFileSourceName, IID_ITSFileSource);
+    LONGLONG start_position = 0, stop_position = 0;
+    CHECK_HR(pTSPushFileSourceSeeking->GetPosition(&start_position, &stop_position), "ITSFileSource::GetPosition() failed");
+    *percent = static_cast<DWORD>(start_position * 100 / stop_position);
+  
 }
 
-/*void GRAPH_CONTROL::InitSlider(HWND hwnd)
+void GRAPH_CONTROL::SetPosition(const DWORD percent)
 {
-    hScroll = GetDlgItem(hwnd, IDC_SLIDER1);
-    EnableWindow(hScroll, FALSE);
-    SendMessage(hScroll, TBM_SETRANGE, TRUE, MAKELONG(0, 100));
-}*/
+    CComPtr<ITSFileSource> pTSPushFileSourceSeeking = QI<ITSFileSource>(TSFileSourceName, IID_ITSFileSource);
+    LONGLONG current_position = 0, stop_position = 0;
+    CHECK_HR(pTSPushFileSourceSeeking->GetPosition(&current_position, &stop_position), "ITSFileSource::GetPosition() failed");
+    current_position = stop_position / 100 * percent;
+    CHECK_HR(pTSPushFileSourceSeeking->SetPosition(&current_position, &stop_position), "ITSFileSource::SetPosition() failed");
+}
 
-void GRAPH_CONTROL::BuildGraphRefact(GS_SETTINGSRefact *pSettings)
+void GRAPH_CONTROL::SetStart()
+{
+    Start();
+}
+
+void GRAPH_CONTROL::SetPause()
+{
+    Pause();
+}
+
+void GRAPH_CONTROL::SetStop()
+{
+    Stop();
+}
+
+LPCOLESTR GRAPH_CONTROL::ToCOLEFileName(char* fileName) const
 {
     USES_CONVERSION;
-    char* pFileChar = pSettings->fileName;
-    LPCOLESTR pFileCOLE = A2COLE(pFileChar);
-    AddTSPushSource(&pFileCOLE);
-    AddDemuxRefact(&pSettings->V_Pids);
-    AddVideoDecoderRefact(&pSettings->V_Pids);
-    AddVideoRendererRefact(&pSettings->hWnd);
-    AddPMTPvtData(&pSettings->V_Pids);
-    Start();
+    return A2COLE(fileName);
+}
+
+void GRAPH_CONTROL::BuildGraph(BVP_SETTINGS *p_settings)
+{
+    LPCOLESTR pFileCOLE = ToCOLEFileName(p_settings->fileName);
+    AddTSFileSource(&pFileCOLE);
+	AddDemux(&p_settings->AllChannels);
+    AddVideoDecoder(&p_settings->AllChannels);
+    AddVideoRenderer(&p_settings->AllChannels);
+    AddPMTPvtData(&p_settings->AllChannels);
+
+    for (int i = 0; i < p_settings->AllChannels.NumVideoPids; i++) UsedPids[i] = p_settings->AllChannels.pids[i];
+}
+
+GRAPH_CONTROL::~GRAPH_CONTROL()
+{
+	for(const auto &rend: RendererMap)
+	{
+        IVideoWindow* pIVW = rend.second;
+        pIVW->put_Visible(OAFALSE);
+        pIVW->put_Owner(reinterpret_cast<OAHWND>(nullptr));
+	}
 }
 
 

@@ -1,9 +1,16 @@
 EXPORTS
-    gsInitialize
-    gsUninitialize
-    gsClose
-    gsOpenRefact
-    gsGetLastError
-    gsResizeRenderer
-    gsGetStatistics
-    gsResetStatistics
+    bvpInitialize
+    bvpUninitialize
+    bvpClose
+    bvpOpen
+    bvpGetLastError
+    bvpResizeRenderer
+    bvpSetTelemetryPosition
+    bvpSetTelemetryColors
+    bvpEnableTelemetry
+    bvpGetPositionTrackBar
+    bvpSetPositionTrackBar
+    bvpMapUnmapChannel
+    bvpSetStart
+    bvpSetPause
+    bvpSetStop

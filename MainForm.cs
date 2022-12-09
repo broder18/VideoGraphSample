@@ -1,45 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
 using System.Windows.Forms;
 using VideoGraphSample.Properties;
 using System.IO;
+using System.Threading;
+using System.Linq;
 
 namespace VideoGraphSample
 {
     public partial class MainForm : Form
     {
-        private const int MBYTE = 1024 * 1024;
-        private const byte SYNC_BYTE = 0x47;
-        private const byte TP_SIZE = 188;
-        private const byte PID_MASK = 0x1F;
-        private Dictionary<ushort, bool> map_pids;
-        private bool graphCreated = false;
-        private enum Pids
-        {
-            Pid0 = 0x85,
-            Pid1 = 0x86,
-            Pid2 = 0x87,
-            Pid3 = 0x88,
-            Pid4 = 0x89
-        }
+        private Dictionary<ushort, bool> _mapPids;
+        private int[] Pids;
+        private int[] Pmts;
 
-        private RendererConrainerForm[] _renderers;
-        private OpenFileDialog path_FileDialog;
-        
+        private bool _graphCreated;
+        private RendererContainerForm[] _renderers;
+        private OpenFileDialog _pathFileDialog;
+
+
+        private InfoForm _infoForm = new InfoForm();
+        private Point[] _rendererLocations;
+
+        private int _focusedItemIdx = -1;
+        private List<IntPtr> _visiblerenderers;
+
         public MainForm()
         {
             InitializeComponent();
             
             try
             {
-                CreateListItems();
-                //CreateWndRender();
+                var r = AllSettings.MainForm;
+                Location = new Point(r.X, r.Y);
+                SetTitle();
                 CreateFileDialog();
 
             }
@@ -51,158 +47,341 @@ namespace VideoGraphSample
 
         private void CreateListItems()
         {
-            foreach(int pid in Enum .GetValues(typeof(Pids)))
+            foreach(var pid in _mapPids)
             {
-                var item = StatisticsList.Items.Add($"0x{(ushort)pid:X4}");
+                var item = StatisticsList.Items.Add($"0x{pid.Key:X4}");
+            }
+        }
+
+        private Dll.AllChannels GetChannels()
+        {
+            unsafe
+            {
+                var channels = new Dll.AllChannels
+                    {NumVideoPids = _renderers.Length};
+
+                
+                for (int i = 0; i < _renderers.Length; i++)
+                {
+                    channels.Pids[i] = Pids[i];
+                    channels.hWnds[i] = (int) _renderers[i].GetPictureBoxHandle();
+                    channels.Pmts[i] = Pmts[i];
+                }
+
+                return channels;
             }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Dll.Close();
+            TurnOffTimerUpdate();
             CloseWndRender();
-            SavePosition();
-        }
-
-        private void alpha_Numeric_ValueChanged(object sender, EventArgs e)
-        {
-            SaveTextAlpha((ushort)alpha_Numeric.Value);
-            change_TextParams();
-        }
-
-        private void positionX_Numeric_ValueChanged(object sender, EventArgs e)
-        {
-            SaveTextPositionX((ushort)positionX_Numeric.Value);
-            change_TextParams();
-        }
-
-        private void positionY_Numeric_ValueChanged(object sender, EventArgs e)
-        {
-            SaveTextPositionY((ushort)positionY_Numeric.Value);
-            change_TextParams();
-        }
-
-        private void change_TextParams()
-        {
-            Dll.SetParams(Settings.Default.alpha_Text, Settings.Default.positionX_Text, Settings.Default.positionY_Text);
         }
 
         private void button_PathFile_Click(object sender, EventArgs e)
         {
-            if (graphCreated) CloseWndRender();
-            if (path_FileDialog.ShowDialog() != DialogResult.OK) return;
-            if (map_pids != null) map_pids.Clear();
+            if (_graphCreated) CloseWndRender();
+            if (_pathFileDialog.ShowDialog() != DialogResult.OK) return;
+            _mapPids?.Clear();
             CreateMap();
-            path_textBox.Text = path_FileDialog.FileName;
-            SearchSyncByte(path_FileDialog.FileName);
+            CreateListItems();
+            ScanBytes.SearchSyncByte(_pathFileDialog.FileName, ref _mapPids);
+            ShowPath();
             CreateWndRender();
-            Dll.Open(path_FileDialog.FileName, map_pids, _renderers);
-            graphCreated = true;
+            //Dll.Open(_pathFileDialog.FileName, _mapPids, _renderers);
+            //TurnOnTimerUpdate();
+            //_graphCreated = true;
+            //Dll.SetStart();
         }
+
+        #region Setup Form
 
         private void CreateFileDialog()
         {
-            path_FileDialog = new OpenFileDialog();
-            path_FileDialog.Title = "Выберите файл";
-            path_FileDialog.Filter = "Video files(*.ts)|*.ts";
+            _pathFileDialog = new OpenFileDialog {Title = @"Выберите файл", Filter = @"Video files(*.ts)|*.ts"};
         }
 
-        private bool SearchSyncByte(string path)
+        private void SetTitle(bool ok = true)
         {
-            using (FileStream fsSource = new FileStream(path, FileMode.Open, FileAccess.Read))
+            Text = @"BION Video Player ";
+        }
+
+        private void ShowPath()
+        {
+            path_textBox.Text = _pathFileDialog.FileName;
+        }
+
+        #endregion
+
+        private RendererContainerForm GetSelectedRenderer()
+        {
+            var focus = StatisticsList.FocusedItem;
+            if (focus == null)
             {
-                fsSource.Seek(0, SeekOrigin.Begin);
-                byte[] bytes = new byte[MBYTE];
-                int counter = 0;
-                int bytesRead = fsSource.Read(bytes, 0, MBYTE);
-
-                while (bytesRead != 0)
-                {
-
-                    if (ReadByte(ref counter, bytesRead, ref bytes, fsSource))
-                    {
-                        CheckPids(ref bytes);
-                        return true;
-                    }
-                    fsSource.Seek(counter, SeekOrigin.Begin);
-                    bytesRead = fsSource.Read(bytes, 0, MBYTE);
-                }
+                _focusedItemIdx = -1;
+                return null;
             }
-            return false;
+
+            _focusedItemIdx = focus.Index;
+            return _renderers[_focusedItemIdx];
         }
 
-        private bool ReadByte(ref int counter, int bytesRead, ref byte[] bytes, FileStream fsSource)
-        {
-            for (int idx = 0; idx < bytesRead; idx++)
-            {
-                if (CheckSyncByte(idx, ref bytes))
-                {
-                    fsSource.Seek(counter, SeekOrigin.Begin);
-                    bytesRead = fsSource.Read(bytes, 0, MBYTE);
-                    if (IsValidPointer(ref bytes, 0))
-                    {
-                        return true; 
-                    }
+        #region RendererSettings
 
-                    idx = 0;
+        private void CreateMap()
+        {
+            _mapPids = new Dictionary<ushort, bool>()
+            {
+                {(ushort)Defines.Pids[0], false },
+                {(ushort)Defines.Pids[1], false },
+                {(ushort)Defines.Pids[2], false },
+                {(ushort)Defines.Pids[3], false },
+                {(ushort)Defines.Pids[4], false }
+            };
+        }
+
+        private void CreateWndRender()
+        {
+            byte quantity = CalculatePids();
+            if (quantity == 0) return;
+            CreateWndRenderArray(quantity);
+            AddRendererEvent();
+        }
+
+        private byte CalculatePids()
+        {
+            byte count = 0;
+            foreach (var item in _mapPids.Where(item => item.Value == true))
+            {
+                count++;
+            }
+
+            return count;
+        }
+
+        private void CreateWndRenderArray(byte count)
+        {
+            _renderers = new RendererContainerForm[count];
+            Pids = new int[count];
+            Pmts = new int[count];
+            ushort id = 0;
+            ushort counter = 0;
+            foreach (var item in _mapPids)
+            {
+                if (item.Value)
+                {
+                    
+                    Pids[id] = item.Key;
+                    Pmts[id] = item.Key - 0x41;
+                    var rend = new RendererContainerForm($"0x{item.Key:X4}", (AllSettings.EnableTelemetry & (1 << counter)) != 0);
+                    var rect = AllSettings.Renderers[counter];
+                    rend.Location = new Point(rect.X, rect.Y);
+                    rend.SetVideoSize(rect.Width, rect.Height);
+                    _renderers[id] = rend;
+                    id++;
                 }
                 counter++;
             }
-
-            return false;
         }
 
-        private bool CheckSyncByte(int idx, ref byte[] bytes)
+        private void CloseWndRender()
         {
-            if (bytes[idx] == SYNC_BYTE) return true;
-            return false;
-        }
-
-        private static bool IsValidPointer(ref byte[] bytes, int idX)
-        {
-            int idX2 = idX + TP_SIZE;
-            int idX3 = idX + TP_SIZE;
-            return bytes[idX] == SYNC_BYTE && bytes[idX2] == SYNC_BYTE && bytes[idX3] == SYNC_BYTE;
-        }
-
-        private void CheckPids(ref byte[] bytes)
-        {
-            byte cropped_byte;
-            ushort res;
-            for (int idx = 0; idx < bytes.Length; idx += 188)
+            if (_renderers == null) return;
+            foreach (var render in _renderers)
             {
-                cropped_byte = (byte)(bytes[idx + 1] & PID_MASK);
-                res = (ushort)(cropped_byte * 256 + bytes[idx + 2]);
-                if (map_pids.ContainsKey(res)) MarkPid(res);
+                render.Close();
+            }
+            _renderers = null;
+            Pids = null;
+            Pmts = null;
+        }
+        #endregion
+
+        #region Menu item handlers
+
+        public static int GetMenuItemScale(object sender)
+        {
+            var menuItem = sender as ToolStripMenuItem;
+            if (menuItem != null)
+            {
+                int scale;
+                if (int.TryParse(menuItem.Tag.ToString(), out scale)) return scale;
+            }
+
+            return -1;
+        }
+
+        #endregion
+
+        #region Renderer stuff
+
+        private void AddRendererEvent()
+        {
+            StatisticsList.ItemChecked += StatisticsList_ItemChecked;
+
+            GetSelectedRenderer();
+
+            for(int i = 0; i < _renderers.Length; i++)
+            {
+                var rend = _renderers[i];
+                NativeMethods.ShowNA(rend); 
+                rend.OnActivation += RendererActivated;
+                rend.OnHidden += RendererHidden;
+                rend.OnMoveBegin += OnRendererMoveBegin;
+                rend.OnMoveEnd += OnRendererMoveEnd;
+                rend.OnTelemetryEnableChange += OnRendererTelemetryEnableChange;
+            }
+
+            Activated += MainForm_Activated;
+        }
+
+        private void RendererActivated(object sender, EventArgs e)
+        {
+            var currend = GetSelectedRenderer();
+            if (currend == null || currend == sender) return;
+
+            var newitem = FindRendererItem(sender);
+            if (newitem == null) return;
+
+        }
+
+        private void RendererHidden(object sender, EventArgs e)
+        {
+            var newitem = FindRendererItem(sender);
+            if (newitem != null) newitem.Checked = false;
+        }
+        #endregion
+
+        #region StatisticList handlers
+
+        private void StatisticsList_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            int idx = e.Item.Index;
+            int mask = 1 << idx;
+            bool map = e.Item.Checked;
+            //Dll.MapUnmapChannel(idx, map);
+        }
+
+
+
+        #endregion
+
+        #region Utilities
+
+        private int FindRendererIdx(object o)
+        {
+            return Array.FindIndex(_renderers, w => w == o);
+        }
+
+        private ListViewItem FindRendererItem(object o)
+        {
+            int idx = FindRendererIdx(o);
+            return idx == -1 ? null : StatisticsList.Items[idx];
+        }
+
+        private void OnRendererMoveBegin(object sender, EventArgs e)
+        {
+            if (NativeMethods.IsShiftPressed())
+            {
+                _rendererLocations = new Point[_renderers.Length];
+                for (int i = 0; i < _renderers.Length; i++)
+                {
+                    var rend = _renderers[i];
+                    _rendererLocations[i] = new Point(rend.Left, rend.Top);
+                }
+
+                var currend = (Form) sender;
+                currend.Move += OnRendererMove;
+                currend.Resize += OnRendererResize;
+                return;
+            }
+
+            _infoForm.DoShow(this);
+        }
+
+        private void OnRendererMove(object sender, EventArgs e)
+        {
+            int originatoridx = FindRendererIdx(sender);
+            if (originatoridx < 0) return;
+            var originator = _renderers[originatoridx];
+            var origpos = _rendererLocations[originatoridx];
+            int deltaX = originator.Left - origpos.X;
+            int deltaY = originator.Top - origpos.Y;
+
+            for (int i = 0; i < _renderers.Length; i++)
+            {
+                if (i == originatoridx) continue;
+
+                var currend = _renderers[i];
+                var startpos = _rendererLocations[i];
+                currend.Left = startpos.X + deltaX;
+                currend.Top = startpos.Y + deltaY;
             }
         }
 
-        private void MarkPid(ushort id)
+        private void OnRendererResize(object sender, EventArgs e)
         {
-            if (map_pids[id] == true) return;
-            map_pids[id] = true;
+            int originatoridx = FindRendererIdx(sender);
+            if (originatoridx < 0) return;
+            var originator = _renderers[originatoridx];
+
+            for (int i = 0; i < _renderers.Length; i++)
+            {
+                if (i == originatoridx) continue;
+                _renderers[i].SetVideoSize(originator.VideoWidth, originator.VideoHeight);
+            }
         }
 
-        /*private IntPtr[] ParseIntPtr()
+        private void OnRendererMoveEnd(object sender, EventArgs e)
         {
-            IntPtr[] hWnd = new IntPtr[_renderers.Length];
-            for(byte ind = 0; ind < _renderers.Length; ind++)
-            {
-                hWnd[ind] = _renderers[ind].Handle;
-            }
-            return hWnd;
+            var currend = (Form) sender;
+            currend.Move -= OnRendererMove;
+            currend.Resize -= OnRendererResize;
+
+            _infoForm.DoHide();
+            _rendererLocations = null;
         }
 
-        private ushort[] ParseUshort()
+        private void OnRendererTelemetryEnableChange(object sender, EventArgs e)
         {
-            ushort[] pids = new ushort[_renderers.Length];
-            int ind = 0;
-            foreach (int pid in Enum.GetValues(typeof(Pids)))
+            int rendidx = FindRendererIdx(sender);
+            if (rendidx < 0) return;
+
+            int bit = 1 << rendidx;
+            var rend = _renderers[rendidx];
+            if (rend.IsTelemetryEnabled()) AllSettings.EnableTelemetry |= bit;
+            else AllSettings.EnableTelemetry &= ~bit;
+
+            //Dll.UpdateTelemetryEnable();
+        }
+
+        private IntPtr[] GetRendererHandles()
+        {
+            var hwnds = new IntPtr[_renderers.Length];
+            for (int i = 0; i < _renderers.Length; i++) hwnds[i] = _renderers[i].Handle;
+            return hwnds;
+
+        }
+
+        #endregion
+
+        #region Form handlers
+
+        private void MainForm_Activated(object sender, EventArgs e)
+        {
+            if (NativeMethods.IsShiftPressed() || _renderers == null) return;
+
+            var hwnds = GetRendererHandles();
+            if (Utils.GetZOrderedForms(ref hwnds))
             {
-                pids[ind++] = (ushort)pid;
+                for (int i = 0; i < _renderers.Length; i++) NativeMethods.BringFormToFront(hwnds[i]);
             }
-            return pids;
-        }*/
+
+            NativeMethods.BringFormToFront(this);
+        }
+
+        #endregion
 
 
     }

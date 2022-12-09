@@ -11,41 +11,19 @@ namespace VideoGraphSample
         private static bool _dllInitialized;
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        private struct TextParams
+        public unsafe struct AllChannels
         {
-            public ushort size;
-            public ushort alpha;
-            public ushort position_x;
-            public ushort position_y;
+            public int NumVideoPids;
+            public fixed int Pids[Defines.MaxChannels];
+            public fixed int Pmts[Defines.MaxChannels];
+            public fixed int hWnds[Defines.MaxChannels];
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        private struct Pids
-        {
-            public ushort pid0;
-            public ushort pid1;
-            public ushort pid2;
-            public ushort pid3;
-            public ushort pid4;
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        private struct Hwnds
-        {
-            public IntPtr hwnd0;
-            public IntPtr hwnd1;
-            public IntPtr hwnd2;
-            public IntPtr hwnd3;
-            public IntPtr hwnd4;
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        private struct GsSettings
+        public struct BvpSettings
         {
             public uint Size;
-            public string filePath;
-            public Hwnds hContainerWnds;
-            public Pids VideoPid;
+            public AllChannels Channels;
         }
 
         private static class NativeMethods
@@ -74,7 +52,28 @@ namespace VideoGraphSample
 
             [DllImport("GraphSampleDLL.dll", EntryPoint = "gsSetPMTParams", CallingConvention = CallingConvention.StdCall)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool gsSetPMTParams(ref TextParams text_params);
+            public static extern bool gsSetPMTParams(ref TextParams textParams);
+
+            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsGetPositionTrackBar", CallingConvention = CallingConvention.StdCall)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool gsGetPositionTrackBar(ref ushort percent);
+
+            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsSetPositionTrackBar", CallingConvention = CallingConvention.StdCall)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool gsSetPositionTrackBar(ushort percent);
+
+            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsSetStart", CallingConvention = CallingConvention.StdCall)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool gsSetStart();
+
+            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsSetPause", CallingConvention = CallingConvention.StdCall)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool gsSetPause();
+
+            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsSetStop", CallingConvention = CallingConvention.StdCall)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool gsSetStop();
+
         }
 
         private static string GetLastError()
@@ -82,7 +81,6 @@ namespace VideoGraphSample
             return Marshal.PtrToStringAnsi(NativeMethods.gsGetLastError());
         }
 
-        //Подумать ещё раз над инициализацией
         public static void Initialize()
         {
             if(!_dllInitialized)
@@ -92,7 +90,6 @@ namespace VideoGraphSample
             }
         }
 
-        //Подумать надо деинсталляцией
         public static void Uninitialize()
         {
             if(_dllInitialized)
@@ -102,34 +99,36 @@ namespace VideoGraphSample
             }
         }
 
-        public static void Open(string path, Dictionary<ushort, bool> map_pids, RendererConrainerForm[] _renderers)
+        public static void Open(string path, Dictionary<ushort, bool> mapPids, RendererContainerForm[] renderers)
         {
-            if (_renderers == null) return;
+            if (renderers == null) return;
             var settings = new GsSettings();
             settings.Size = (uint)Marshal.SizeOf(settings);
             settings.filePath = path;
-            AddItemStruct(_renderers, ref settings);
+            AddItemStruct(renderers, ref settings);
             if (!NativeMethods.gsOpenRefact(ref settings)) throw new Exception("gsOpenrefact() failed: " + GetLastError());
+            
         }  
         
 
-        private static void AddItemStruct(RendererConrainerForm[] _renderers, ref GsSettings settings)
+        private static void AddItemStruct(RendererContainerForm[] renderers, ref GsSettings settings)
         {
-            foreach(var item in _renderers)
+            foreach(var item in renderers)
             {
-                if (AddPidHWND(ref settings.VideoPid.pid0, ref settings.hContainerWnds.hwnd0, item)) continue;
-                if (AddPidHWND(ref settings.VideoPid.pid1, ref settings.hContainerWnds.hwnd1, item)) continue;
-                if (AddPidHWND(ref settings.VideoPid.pid2, ref settings.hContainerWnds.hwnd2, item)) continue;
-                if (AddPidHWND(ref settings.VideoPid.pid3, ref settings.hContainerWnds.hwnd3, item)) continue;
-                if (AddPidHWND(ref settings.VideoPid.pid4, ref settings.hContainerWnds.hwnd4, item)) continue;
+                if (AddPidHwnd(ref settings.VideoPid.pid0, ref settings.hContainerWnds.hwnd0, item)) continue;
+                if (AddPidHwnd(ref settings.VideoPid.pid1, ref settings.hContainerWnds.hwnd1, item)) continue;
+                if (AddPidHwnd(ref settings.VideoPid.pid2, ref settings.hContainerWnds.hwnd2, item)) continue;
+                if (AddPidHwnd(ref settings.VideoPid.pid3, ref settings.hContainerWnds.hwnd3, item)) continue;
+                if (AddPidHwnd(ref settings.VideoPid.pid4, ref settings.hContainerWnds.hwnd4, item)) continue;
             }
         }
 
-        private static bool AddPidHWND(ref ushort pid, ref IntPtr hwnd, RendererConrainerForm item)
+        private static bool AddPidHwnd(ref ushort pid, ref IntPtr hwnd, RendererContainerForm item)
         {
             if (pid != 0) return false;
             pid = Convert.ToUInt16(item.Name, 16);
-            hwnd = item.Handle;
+            hwnd = item.GetPictureBoxHandle();
+            //hwnd = item.Handle;
             return true;
         }
 
@@ -145,11 +144,36 @@ namespace VideoGraphSample
             if (!NativeMethods.gsResizeRenderer(hwnd)) throw new Exception("gsResizeRenderer() failed: " + GetLastError());
         }
 
-        public static void SetParams(ushort text_alpha, ushort x, ushort y)
+        public static void SetParams(ushort textAlpha, ushort x, ushort y)
         {
-            var text_atr = new TextParams { alpha = text_alpha, position_x = x, position_y = y };
-            text_atr.size = (ushort)Marshal.SizeOf(text_atr);
-            if (!NativeMethods.gsSetPMTParams(ref text_atr)) throw new Exception("gsSetPMTParams() failed: " + GetLastError());
+            var textAtr = new TextParams { alpha = textAlpha, position_x = x, position_y = y };
+            textAtr.size = (ushort)Marshal.SizeOf(textAtr);
+            if (!NativeMethods.gsSetPMTParams(ref textAtr)) throw new Exception("gsSetPMTParams() failed: " + GetLastError());
+        }
+
+        public static void GetPositionTrackBar(ref ushort percent)
+        {
+            if (!NativeMethods.gsGetPositionTrackBar(ref percent)) throw new Exception("gsGetPositionTrackBar() failed: " + GetLastError());
+        }
+
+        public static void SetPositionTrackBar(ushort percent)
+        {
+            if (!NativeMethods.gsSetPositionTrackBar(percent)) throw new Exception("gsSetPositionTrackBar() failed: " + GetLastError());
+        }
+
+        public static void SetStart()
+        {
+            if (!NativeMethods.gsSetStart()) throw new Exception("gsSetStart() failed: " + GetLastError());
+        }
+
+        public static void SetPause()
+        {
+            if (!NativeMethods.gsSetPause()) throw new Exception("gsSetPause() failed: " + GetLastError());
+        }
+
+        public static void SetStop()
+        {
+            if (!NativeMethods.gsSetStop()) throw new Exception("gsSetStop() failed: " + GetLastError());
         }
 
     }

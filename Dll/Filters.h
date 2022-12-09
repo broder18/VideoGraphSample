@@ -5,22 +5,15 @@ extern LPCTSTR UDPLocalSourceName;
 extern LPCTSTR RTPSourceName;
 extern LPCTSTR DemuxName;
 
-extern LPCTSTR VideoDecoderName0;
-extern LPCTSTR VideoDecoderName1;
-extern LPCTSTR VideoDecoderName2;
-extern LPCTSTR VideoDecoderName3;
-extern LPCTSTR VideoDecoderName4;
+extern LPCTSTR VideoDecoderName;
 
 extern LPCTSTR FFDShowVideoDecoderName;
 extern LPCTSTR FFDShowRawVideoFilterName;
 
-extern LPCTSTR VideoRendererName0;
-extern LPCTSTR VideoRendererName1;
-extern LPCTSTR VideoRendererName2;
-extern LPCTSTR VideoRendererName3;
-extern LPCTSTR VideoRendererName4;
+extern LPCTSTR VideoRendererName;
 
 extern LPCTSTR PMTPvtDataName;
+extern LPCTSTR TSFileSourceName;
 
 
 //------------------------------------------------------------------------
@@ -36,4 +29,4 @@ DEFINE_GUID(CLSID_ffdshowRawVideoFilter, 0x0B390488, 0xD80F, 0x4A68, 0x84, 0x08,
 DEFINE_GUID(CLSID_LAVVideo, 0xEE30215D, 0x164F, 0x4A92, 0xA4, 0xEB, 0x9D, 0x4C, 0x13, 0x39, 0x0F, 0x9F);
 
 //TsPushFilter
-//DEFINE_GUID(CLSID_TSPUSHFILESOURCE, 0x4dc17023, 0x2d29, 0x4069, 0xa8, 0x1b, 0xe3, 0xd1, 0xf2, 0xa3, 0x1c, 0xba);
+DEFINE_GUID(CLSID_TSFileSource,0x4f8bf30c, 0x3beb, 0x43a3, 0x8b, 0xf2, 0x10, 0x9, 0x6f, 0xd2, 0x8c, 0xf2);

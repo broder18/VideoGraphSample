@@ -39,16 +39,16 @@
     <ClInclude Include="Defaults.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphSample.h">
+    <ClInclude Include="BIONVideoPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphSamplePvt.h">
+    <ClInclude Include="BIONVideoPlayerPvt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MediaTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CMediaSeekingProxy.h">
+    <ClInclude Include="CAWString.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,10 +65,7 @@
     <ClCompile Include="Filters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphSample.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CMediaSeekingProxy.cpp">
+    <ClCompile Include="BIONVideoPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

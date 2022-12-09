@@ -3,39 +3,23 @@
 
 #include <PshPack4.h>
 
-typedef struct tagTEXT_PARAMS
-{
-    WORD size;
-    WORD alpha;
-    WORD x;
-    WORD y;
-} TEXT_PARAMS;
+static constexpr int MAX_CHANNELS = 8;
 
-typedef struct tagHCONTAINER_WND
+typedef struct tagChannels
 {
-    HWND hContainerWnd0;
-    HWND hContainerWnd1;
-    HWND hContainerWnd2;
-    HWND hContainerWnd3;
-    HWND hContainerWnd4;
-} HCONTAINER_WND;
+    int NumVideoPids;
+    int NumPMTs;
+    int pids[MAX_CHANNELS];
+    int pmts[MAX_CHANNELS];
+    HWND hwnds[MAX_CHANNELS];
+} CHANNELS;
 
-typedef struct tagPIDS
-{
-    WORD pidV0;
-    WORD pidV1;
-    WORD pidV2;
-    WORD pidV3;
-    WORD pidV4;
-} PIDS;
-
-typedef struct tagGS_SettingsRefact
+typedef struct tagBVP_Settings
 {
     DWORD Size;
     char* fileName;
-    HCONTAINER_WND hWnd;
-    PIDS V_Pids;
-} GS_SETTINGSRefact;
+    CHANNELS AllChannels;
+} BVP_SETTINGS;
 
 #include <PopPack.h>
 
