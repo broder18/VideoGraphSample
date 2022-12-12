@@ -41,10 +41,11 @@ void CHECK_HR(const HRESULT hr, const char *p_err_msg)
 void GRAPH_CONTROL::AddTSFileSource(LPCOLESTR *psz_file_name)
 {
     AddFilter(CLSID_TSFileSource, TSFileSourceName);
-    pTSPushFileSource = QI<IFileSourceFilter>(TSFileSourceName, IID_IFileSourceFilter);
+    pTSFileSource = QI<IFileSourceFilter>(TSFileSourceName, IID_IFileSourceFilter);
+    //pTSFileSource = QI<ITSFileSource>(TSFileSourceName, IID_IFileSourceFilter);
     CMediaType pmt;
     PrepareMediaType(&pmt);
-    CHECK_HR(pTSPushFileSource->Load(*psz_file_name, &pmt), "TSFileSource Load() function failed");
+    CHECK_HR(pTSFileSource->Load(*psz_file_name, &pmt), "TSFileSource Load() function failed");
 }
 
 //------------------------------------------------------------------------
@@ -176,7 +177,7 @@ void GRAPH_CONTROL::PlaceRenderer(const HWND h_container_wnd) const
     if (it == RendererMap.end()) THROW("PlaceRenderer(): invalid window handle");
 
     RECT rect;
-    if (!GetClientRect(h_container_wnd, &rect)) THROW("GetClientWindow() failed");
+    //if (!GetClientRect(h_container_wnd, &rect)) THROW("GetClientWindow() failed");
 
     IVideoWindow* pIVideoWindow = it->second;
 
@@ -281,22 +282,17 @@ void GRAPH_CONTROL::SetStop()
     Stop();
 }
 
-LPCOLESTR GRAPH_CONTROL::ToCOLEFileName(char* fileName) const
-{
-    USES_CONVERSION;
-    return A2COLE(fileName);
-}
-
 void GRAPH_CONTROL::BuildGraph(BVP_SETTINGS *p_settings)
 {
-    LPCOLESTR pFileCOLE = ToCOLEFileName(p_settings->fileName);
+    USES_CONVERSION;
+    LPCOLESTR pFileCOLE = A2COLE(p_settings->fileName);
     AddTSFileSource(&pFileCOLE);
 	AddDemux(&p_settings->AllChannels);
     AddVideoDecoder(&p_settings->AllChannels);
     AddVideoRenderer(&p_settings->AllChannels);
     AddPMTPvtData(&p_settings->AllChannels);
 
-    for (int i = 0; i < p_settings->AllChannels.NumVideoPids; i++) UsedPids[i] = p_settings->AllChannels.pids[i];
+    /*for (int i = 0; i < p_settings->AllChannels.NumVideoPids; i++) UsedPids[i] = p_settings->AllChannels.pids[i]; */
 }
 
 GRAPH_CONTROL::~GRAPH_CONTROL()

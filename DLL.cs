@@ -9,11 +9,13 @@ namespace VideoGraphSample
     public static class Dll
     {
         private static bool _dllInitialized;
+        private static bool _dllOpened;
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
         public unsafe struct AllChannels
         {
             public int NumVideoPids;
+            public int NumPMTs;
             public fixed int Pids[Defines.MaxChannels];
             public fixed int Pmts[Defines.MaxChannels];
             public fixed int hWnds[Defines.MaxChannels];
@@ -23,69 +25,80 @@ namespace VideoGraphSample
         public struct BvpSettings
         {
             public uint Size;
+            public string fileName;
             public AllChannels Channels;
         }
 
         private static class NativeMethods
         {
-            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsInitialize", CallingConvention = CallingConvention.StdCall)]
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpInitialize", CallingConvention = CallingConvention.StdCall)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool gsInitialize();
+            public static extern bool bvpInitialize();
 
-            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsUninitialize", CallingConvention = CallingConvention.StdCall)]
-            public static extern void gsUninitialize();
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpUninitialize", CallingConvention = CallingConvention.StdCall)]
+            public static extern void bvpUninitialize();
 
-            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsGetLastError", CallingConvention = CallingConvention.StdCall)]
-            public static extern IntPtr gsGetLastError();
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpGetLastError", CallingConvention = CallingConvention.StdCall)]
+            public static extern IntPtr bvpGetLastError();
 
-            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsClose", CallingConvention = CallingConvention.StdCall)]
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpClose", CallingConvention = CallingConvention.StdCall)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern void gsClose();
+            public static extern void bvpClose();
 
-            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsResizeRenderer", CallingConvention = CallingConvention.StdCall)]
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpResizeRenderer", CallingConvention = CallingConvention.StdCall)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool gsResizeRenderer(IntPtr hContainerWnd);
+            public static extern bool bvpResizeRenderer(IntPtr hContainerWnd);
 
-            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsOpenRefact", CallingConvention = CallingConvention.StdCall)]
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpOpen", CallingConvention = CallingConvention.StdCall)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool gsOpenRefact(ref GsSettings settings);
+            public static extern bool bvpOpen(ref BvpSettings settings);
 
-            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsSetPMTParams", CallingConvention = CallingConvention.StdCall)]
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpGetPositionTrackBar", CallingConvention = CallingConvention.StdCall)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool gsSetPMTParams(ref TextParams textParams);
+            public static extern bool bvpGetPositionTrackBar(ref ushort percent);
 
-            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsGetPositionTrackBar", CallingConvention = CallingConvention.StdCall)]
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpSetPositionTrackBar", CallingConvention = CallingConvention.StdCall)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool gsGetPositionTrackBar(ref ushort percent);
+            public static extern bool bvpSetPositionTrackBar(ushort percent);
 
-            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsSetPositionTrackBar", CallingConvention = CallingConvention.StdCall)]
+            [DllImport("BIONVideoPayerDLL.dll", EntryPoint = "bvpSetStart", CallingConvention = CallingConvention.StdCall)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool gsSetPositionTrackBar(ushort percent);
+            public static extern bool bvpSetStart();
 
-            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsSetStart", CallingConvention = CallingConvention.StdCall)]
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpSetPause", CallingConvention = CallingConvention.StdCall)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool gsSetStart();
+            public static extern bool bvpSetPause();
 
-            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsSetPause", CallingConvention = CallingConvention.StdCall)]
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpSetStop", CallingConvention = CallingConvention.StdCall)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool gsSetPause();
+            public static extern bool bvpSetStop();
 
-            [DllImport("GraphSampleDLL.dll", EntryPoint = "gsSetStop", CallingConvention = CallingConvention.StdCall)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool gsSetStop();
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpSetTelemtryPosition", CallingConvention = CallingConvention.StdCall)]
+            public static extern void bvpSetTelemetryPosition(int x, int y);
 
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpSetTelemetryAlpha")]
+            public static extern void bvpSetTelemetryAlpha(int alpha);
+
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpMapUnmapChannel", CallingConvention = CallingConvention.StdCall)]
+            public static extern void bvpMapUnmapChannel(int ch, bool map);
+
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpSetTelemetryColors", CallingConvention = CallingConvention.StdCall)]
+            public static extern void bvpSetTelemetryColors(uint txtColor, uint bkgColor);
+
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpEnableTelemetry", CallingConvention = CallingConvention.StdCall)]
+            public static extern void bvpEnableTelemetry(int enable);
         }
 
         private static string GetLastError()
         {
-            return Marshal.PtrToStringAnsi(NativeMethods.gsGetLastError());
+            return Marshal.PtrToStringAnsi(NativeMethods.bvpGetLastError());
         }
 
         public static void Initialize()
         {
             if(!_dllInitialized)
             {
-                if (!NativeMethods.gsInitialize()) throw new Exception("gsInitialize() failed: " + GetLastError());
+                if (!NativeMethods.bvpInitialize()) throw new Exception("bvpInitialize() failed: " + GetLastError());
                 _dllInitialized = true;
             }
         }
@@ -94,86 +107,81 @@ namespace VideoGraphSample
         {
             if(_dllInitialized)
             {
-                NativeMethods.gsUninitialize();
+                NativeMethods.bvpUninitialize();
                 _dllInitialized = false;
             }
         }
 
-        public static void Open(string path, Dictionary<ushort, bool> mapPids, RendererContainerForm[] renderers)
+        public static void Open(string path, AllChannels channels)
         {
-            if (renderers == null) return;
-            var settings = new GsSettings();
+            if (channels.NumVideoPids < 1) return;
+            var settings = new BvpSettings();
             settings.Size = (uint)Marshal.SizeOf(settings);
-            settings.filePath = path;
-            AddItemStruct(renderers, ref settings);
-            if (!NativeMethods.gsOpenRefact(ref settings)) throw new Exception("gsOpenrefact() failed: " + GetLastError());
+            settings.fileName = path;
+            settings.Channels = channels;
+            if (!NativeMethods.bvpOpen(ref settings)) throw new Exception("bvpOpen() failed: " + GetLastError());
             
-        }  
-        
-
-        private static void AddItemStruct(RendererContainerForm[] renderers, ref GsSettings settings)
-        {
-            foreach(var item in renderers)
-            {
-                if (AddPidHwnd(ref settings.VideoPid.pid0, ref settings.hContainerWnds.hwnd0, item)) continue;
-                if (AddPidHwnd(ref settings.VideoPid.pid1, ref settings.hContainerWnds.hwnd1, item)) continue;
-                if (AddPidHwnd(ref settings.VideoPid.pid2, ref settings.hContainerWnds.hwnd2, item)) continue;
-                if (AddPidHwnd(ref settings.VideoPid.pid3, ref settings.hContainerWnds.hwnd3, item)) continue;
-                if (AddPidHwnd(ref settings.VideoPid.pid4, ref settings.hContainerWnds.hwnd4, item)) continue;
-            }
         }
-
-        private static bool AddPidHwnd(ref ushort pid, ref IntPtr hwnd, RendererContainerForm item)
-        {
-            if (pid != 0) return false;
-            pid = Convert.ToUInt16(item.Name, 16);
-            hwnd = item.GetPictureBoxHandle();
-            //hwnd = item.Handle;
-            return true;
-        }
-
-
 
         public static void Close()
         {
-            NativeMethods.gsClose();
+            NativeMethods.bvpClose();
+            _dllOpened = false;
         }
 
         public static void Resize(IntPtr hwnd)
         {
-            if (!NativeMethods.gsResizeRenderer(hwnd)) throw new Exception("gsResizeRenderer() failed: " + GetLastError());
+            if (!NativeMethods.bvpResizeRenderer(hwnd)) throw new Exception("bvpResizeRenderer() failed: " + GetLastError());
         }
 
-        public static void SetParams(ushort textAlpha, ushort x, ushort y)
+        public static void UpdateTelemetryPosition()
         {
-            var textAtr = new TextParams { alpha = textAlpha, position_x = x, position_y = y };
-            textAtr.size = (ushort)Marshal.SizeOf(textAtr);
-            if (!NativeMethods.gsSetPMTParams(ref textAtr)) throw new Exception("gsSetPMTParams() failed: " + GetLastError());
+            NativeMethods.bvpSetTelemetryPosition(AllSettings.TelemetryPosX, AllSettings.TelemetryPosY);
         }
 
+        public static void UpdateTelemetryAlpha()
+        {
+            NativeMethods.bvpSetTelemetryAlpha(AllSettings.TelemetryAlpha);
+        }
+
+        public static void UpdateTelemetryColors()
+        {
+            NativeMethods.bvpSetTelemetryColors(AllSettings.TelemetryTxtColor, AllSettings.TelemetryBkgColor);
+        }
+
+        public static void UpdateTelemetryEnable()
+        {
+            NativeMethods.bvpEnableTelemetry(AllSettings.EnableTelemetry);
+        }
+
+        public static void MapUnmapChannel(int channel, bool map)
+
+        {
+            NativeMethods.bvpMapUnmapChannel(channel, map);
+        }
         public static void GetPositionTrackBar(ref ushort percent)
         {
-            if (!NativeMethods.gsGetPositionTrackBar(ref percent)) throw new Exception("gsGetPositionTrackBar() failed: " + GetLastError());
+            if (!NativeMethods.bvpGetPositionTrackBar(ref percent)) throw new Exception("bvpGetPositionTrackBar() failed: " + GetLastError());
         }
 
         public static void SetPositionTrackBar(ushort percent)
         {
-            if (!NativeMethods.gsSetPositionTrackBar(percent)) throw new Exception("gsSetPositionTrackBar() failed: " + GetLastError());
+            if (!NativeMethods.bvpSetPositionTrackBar(percent)) throw new Exception("bvpSetPositionTrackBar() failed: " + GetLastError());
         }
 
         public static void SetStart()
         {
-            if (!NativeMethods.gsSetStart()) throw new Exception("gsSetStart() failed: " + GetLastError());
+            if (!NativeMethods.bvpSetStart()) throw new Exception("bvpSetStart() failed: " + GetLastError());
         }
 
         public static void SetPause()
         {
-            if (!NativeMethods.gsSetPause()) throw new Exception("gsSetPause() failed: " + GetLastError());
+            if (!NativeMethods.bvpSetPause()) throw new Exception("bvpSetPause() failed: " + GetLastError());
         }
 
         public static void SetStop()
         {
-            if (!NativeMethods.gsSetStop()) throw new Exception("gsSetStop() failed: " + GetLastError());
+            if (!NativeMethods.bvpSetStop()) throw new Exception("bvpSetStop() failed: " + GetLastError());
         }
 
     }

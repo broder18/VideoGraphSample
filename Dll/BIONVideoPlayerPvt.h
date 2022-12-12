@@ -23,7 +23,7 @@ class GRAPH_CONTROL : private CGraph
     /* link between the actual renderer window and its parent window */
     map<HWND, CComPtr<IVideoWindow>> RendererMap;
     CComPtr<IPMTPvtDataSettings2> pIPMTPvtDataSettings2;
-    CComPtr<IFileSourceFilter> pTSPushFileSource;
+    CComPtr<IFileSourceFilter> pTSFileSource;
     CComPtr<IMediaSeeking> pIMediaSeeking;
 
     ULONG UsedPids[MAX_CHANNELS]{};
@@ -36,7 +36,6 @@ class GRAPH_CONTROL : private CGraph
     void AddVideoRenderer(CHANNELS* pChannels);
     static void SetupRenderer(IVideoWindow* pVideoWindow, HWND hContainerWnd);
     void AddPMTPvtData(CHANNELS* pChannels);   
-    LPCOLESTR ToCOLEFileName(char* fileName) const;
 
 public:
     GRAPH_CONTROL()

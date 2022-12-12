@@ -58,7 +58,7 @@ namespace VideoGraphSample
             unsafe
             {
                 var channels = new Dll.AllChannels
-                    {NumVideoPids = _renderers.Length};
+                    {NumVideoPids = _renderers.Length, NumPMTs = _renderers.Length};
 
                 
                 for (int i = 0; i < _renderers.Length; i++)
@@ -89,7 +89,8 @@ namespace VideoGraphSample
             ScanBytes.SearchSyncByte(_pathFileDialog.FileName, ref _mapPids);
             ShowPath();
             CreateWndRender();
-            //Dll.Open(_pathFileDialog.FileName, _mapPids, _renderers);
+            Dll.Open(_pathFileDialog.FileName, GetChannels());
+            Dll.SetStart();
             //TurnOnTimerUpdate();
             //_graphCreated = true;
             //Dll.SetStart();
@@ -114,6 +115,8 @@ namespace VideoGraphSample
 
         #endregion
 
+        #region RendererSettings
+
         private RendererContainerForm GetSelectedRenderer()
         {
             var focus = StatisticsList.FocusedItem;
@@ -126,8 +129,6 @@ namespace VideoGraphSample
             _focusedItemIdx = focus.Index;
             return _renderers[_focusedItemIdx];
         }
-
-        #region RendererSettings
 
         private void CreateMap()
         {
@@ -152,11 +153,7 @@ namespace VideoGraphSample
         private byte CalculatePids()
         {
             byte count = 0;
-            foreach (var item in _mapPids.Where(item => item.Value == true))
-            {
-                count++;
-            }
-
+            foreach (var item in _mapPids.Where(item => item.Value == true)) count++;
             return count;
         }
 

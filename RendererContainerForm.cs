@@ -19,6 +19,8 @@ namespace VideoGraphSample
         private const int BordersWidth = ImageBorderWidth * 2;
         private const int BordersHeight = ImageBorderHeight * 2;
 
+        private const int TrackBarHeight = 45;
+
         /* WM_SIZING message operates with the coordinates of the whole window but we need to work with its client part */
         /* In order to abstract from the current window style, we remember the differences between the windows and client sizes */
         private int _clientDeltaX;
@@ -29,7 +31,6 @@ namespace VideoGraphSample
 
         /* inform about hiding so that an interested party can disable our stream */
         public EventHandler OnHidden { get; set; }
-
         public EventHandler OnMoveBegin { get; set; }
         public EventHandler OnMoveEnd { get; set; }
 
@@ -87,24 +88,6 @@ namespace VideoGraphSample
 
         public int VideoWidth => ClientSize.Width - BordersWidth;
         public int VideoHeight => ClientSize.Height - BordersHeight;
-
-
-
-        /*public RendererContainerForm(ushort name)
-        {
-            InitializeComponent();
-
-            this.WindowState = System.Windows.Forms.FormWindowState.Normal;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.DoubleBuffered = true;
-            this.Name = name.ToString("X2");
-            this.Text = "x00" + this.Name;
-            this.Set_Params();
-            this.Resize += new System.EventHandler(this.RendererContainerForm_Resize);
-            this.trackBar_Player.MouseDown += new System.Windows.Forms.MouseEventHandler(this.click_MouseDown);
-            this.trackBar_Player.MouseUp += new System.Windows.Forms.MouseEventHandler(this.click_MouseUp);
-            _oldLen = this.Size.Width;
-        }*/
 
         [Localizable(false)]
         public sealed override string Text
@@ -201,32 +184,6 @@ namespace VideoGraphSample
             int imageW = Convert.ToInt32(imageH * AspectRatio);
             return imageW + _clientDeltaX + BordersWidth;
         }
-
-
-
-
-
-        /*private void RendererContainerForm_Resize(object sender, EventArgs e)
-        {
-            try
-            {
-                Control control = (Control)sender;
-
-                if (control.Size.Height != control.Size.Width)
-                {
-                    this.Size = new Size(control.Size.Width, control.Size.Width);
-                }
-
-                _oldLen = this.Size.Height;
-                Dll.Resize(this.pictureBox_Player.Handle);
-
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show(exc.Message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-        }*/
 
         public void SetTrackBarPosition(ushort percent)
         {
