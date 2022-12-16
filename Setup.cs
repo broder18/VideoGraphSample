@@ -12,6 +12,10 @@ namespace VideoGraphSample
         private readonly uint _origTelemetryTxtColor = AllSettings.TelemetryTxtColor;
         private readonly uint _origTelemetryBkgColor = AllSettings.TelemetryBkgColor;
 
+        private OpenFileDialog _pathFileDialog;
+
+        public string FilePath { get; private set;}
+
         public SetupForm()
         {
             InitializeComponent();
@@ -40,9 +44,9 @@ namespace VideoGraphSample
 
         private static void UpdateTelemetry()
         {
-            //Dll.UpdateTelemetryPosition();
-            //Dll.UpdateTelemetryAlpha();
-            //Dll.UpdateTelemetryColors();
+            Dll.UpdateTelemetryPosition();
+            Dll.UpdateTelemetryAlpha();
+            Dll.UpdateTelemetryColors();
         }
 
         private void SetupForm_Shown(object sender, EventArgs e)
@@ -87,21 +91,21 @@ namespace VideoGraphSample
         {
             AllSettings.TelemetryPosX = tbTelemetryPosX.Value;
             lblTelemetryPosX.Text = $@"X = {AllSettings.TelemetryPosX}";
-            //Dll.UpdateTelemetryPosition();
+            Dll.UpdateTelemetryPosition();
         }
 
         private void tbTelemetryPosY_ValueChanged(object sender, EventArgs e)
         {
             AllSettings.TelemetryPosY = tbTelemetryPosY.Value;
             lblTelemetryPosY.Text = $@"Y = {AllSettings.TelemetryPosY}";
-            //Dll.UpdateTelemetryPosition();
+            Dll.UpdateTelemetryPosition();
         }
 
         private void tbTelemetryAlpha_ValueChanged(object sender, EventArgs e)
         {
             AllSettings.TelemetryAlpha = tbTelemetryAlpha.Value;
             lblTelemetryAlpha.Text = $@"A = {AllSettings.TelemetryAlpha}";
-            //Dll.UpdateTelemetryAlpha();
+            Dll.UpdateTelemetryAlpha();
         }
 
         private void panelBkg_Click(object sender, EventArgs e)
@@ -111,7 +115,7 @@ namespace VideoGraphSample
             {
                 panelBkg.BackColor = colorDialog.Color;
                 AllSettings.TelemetryBkgColor = ColorToColorRef(colorDialog.Color);
-                //Dll.UpdateTelemtryColors();
+                Dll.UpdateTelemetryColors();
             }
         }
 
@@ -122,8 +126,26 @@ namespace VideoGraphSample
             {
                 panelTxt.BackColor = colorDialog.Color;
                 AllSettings.TelemetryTxtColor = ColorToColorRef(colorDialog.Color);
-                //Dll.UpdateTelemetryColors();
+                Dll.UpdateTelemetryColors();
             }
+        }
+
+        private void btnPath_Click(object sender, EventArgs e)
+        {
+            CreateFileDialog();
+            if (_pathFileDialog.ShowDialog() != DialogResult.OK) return;
+            FilePath = _pathFileDialog.FileName;
+            ShowPath();
+        }
+
+        private void CreateFileDialog()
+        {
+            _pathFileDialog = new OpenFileDialog { Title = @"Выберите файл", Filter = @"Video files(*.ts)|*.ts" };
+        }
+
+        private void ShowPath()
+        {
+            pathTextBox.Text = _pathFileDialog.FileName;
         }
     }
 }

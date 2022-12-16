@@ -28,7 +28,7 @@ class GRAPH_CONTROL : private CGraph
 
     ULONG UsedPids[MAX_CHANNELS]{};
 
-    void AddTSFileSource(LPCOLESTR* psz_file_name);
+    
     void AddDemux(CHANNELS *pChannels);
     void AddDemuxPinVideoStream(WORD pid, int idx);
     void AddDemuxPMTPin(CHANNELS* pChannels);
@@ -45,6 +45,7 @@ public:
 
     ~GRAPH_CONTROL();
 
+    void AddTSFileSource(char* psz_file_name);
     void BuildGraph(BVP_SETTINGS* pSettings, char* psz_file_name);
     void PlaceRenderer(HWND h_container_wnd) const;
     void GetPositions(DWORD* percent);

@@ -38,14 +38,16 @@ void CHECK_HR(const HRESULT hr, const char *p_err_msg)
 // MPEG-2 demultiplexer
 //
 
-void GRAPH_CONTROL::AddTSFileSource(LPCOLESTR *psz_file_name)
+void GRAPH_CONTROL::AddTSFileSource(char* psz_file_name)
 {
+    USES_CONVERSION;
+    LPCOLESTR pFileCOLE = A2COLE(psz_file_name);
     AddFilter(CLSID_TSFileSource, TSFileSourceName);
     //pTSFileSource = QI<IFileSourceFilter>(TSFileSourceName, IID_IFileSourceFilter);
     pTSFileSource = QI<ITSFileSource>(TSFileSourceName, IID_IFileSourceFilter);
     CMediaType pmt;
     PrepareMediaType(&pmt);
-    CHECK_HR(pTSFileSource->Load(*psz_file_name, &pmt), "TSFileSource Load() function failed");
+    CHECK_HR(pTSFileSource->Load(pFileCOLE, &pmt), "TSFileSource Load() function failed");
 }
 
 //------------------------------------------------------------------------
@@ -284,9 +286,8 @@ void GRAPH_CONTROL::SetStop()
 
 void GRAPH_CONTROL::BuildGraph(BVP_SETTINGS *p_settings, char* psz_file_name)
 {
-    USES_CONVERSION;
-    LPCOLESTR pFileCOLE = A2COLE(psz_file_name);
-    AddTSFileSource(&pFileCOLE);
+    
+    AddTSFileSource(psz_file_name);
 	AddDemux(&p_settings->AllChannels);
     AddVideoDecoder(&p_settings->AllChannels);
     AddVideoRenderer(&p_settings->AllChannels);

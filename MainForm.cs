@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
@@ -16,9 +17,8 @@ namespace VideoGraphSample
         private int[] Pids;
         private int[] Pmts;
 
-        private bool _graphCreated;
         private RendererContainerForm[] _renderers;
-        private OpenFileDialog _pathFileDialog;
+        //private OpenFileDialog _pathFileDialog;
 
 
         private InfoForm _infoForm = new InfoForm();
@@ -36,7 +36,7 @@ namespace VideoGraphSample
                 var r = AllSettings.MainForm;
                 Location = new Point(r.X, r.Y);
                 SetTitle();
-                CreateFileDialog();
+                //CreateFileDialog();
 
             }
             catch (Exception e)
@@ -89,37 +89,48 @@ namespace VideoGraphSample
 
         private void button_PathFile_Click(object sender, EventArgs e)
         {
-            if (_graphCreated) CloseWndRender();
-            if (_pathFileDialog.ShowDialog() != DialogResult.OK) return;
+            if (Dll._dllOpened) CloseWndRender();
+            //if (_pathFileDialog.ShowDialog() != DialogResult.OK) return;
             _mapPids?.Clear();
             CreateMap();
-            ScanBytes.SearchSyncByte(_pathFileDialog.FileName, ref _mapPids);
+            //ScanBytes.SearchSyncByte(_pathFileDialog.FileName, ref _mapPids);
             CreateListItems();
-            ShowPath();
+            //ShowPath();
             CreateWndRender();
-            Dll.Open(_pathFileDialog.FileName, GetChannels());
+            //Dll.Open(_pathFileDialog.FileName, GetChannels());
             Dll.SetStart();
             //TurnOnTimerUpdate();
-            //_graphCreated = true;
             //Dll.SetStart();
+        }
+
+        private void Start(string filePath)
+        {
+            if (Dll._dllOpened) CloseWndRender();
+            _mapPids?.Clear();
+            CreateMap();
+            ScanBytes.SearchSyncByte(filePath, ref _mapPids);
+            CreateListItems();
+            CreateWndRender();
+            Dll.Open(filePath, GetChannels());
+            Dll.SetStart();
         }
 
         #region Setup Form
 
-        private void CreateFileDialog()
+        /*private void CreateFileDialog()
         {
             _pathFileDialog = new OpenFileDialog {Title = @"Выберите файл", Filter = @"Video files(*.ts)|*.ts"};
-        }
+        }*/
 
         private void SetTitle(bool ok = true)
         {
             Text = @"BION Video Player ";
         }
 
-        private void ShowPath()
+        /*private void ShowPath()
         {
             path_textBox.Text = _pathFileDialog.FileName;
-        }
+        }*/
 
         #endregion
 
@@ -395,7 +406,10 @@ namespace VideoGraphSample
         {
             using (var frm = new SetupForm())
             {
-                //if(frm.ShowDialog() == DialogResult.OK) SetTitle(Dll.Up);
+                if ((frm.ShowDialog() == DialogResult.OK) && frm.FilePath!= null)
+                {
+                    Start(frm.FilePath);
+                }
             }
         }
 

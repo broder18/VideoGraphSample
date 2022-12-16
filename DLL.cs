@@ -9,7 +9,7 @@ namespace VideoGraphSample
     public static class Dll
     {
         private static bool _dllInitialized;
-        private static bool _dllOpened;
+        public static bool _dllOpened;
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
         public unsafe struct AllChannels
