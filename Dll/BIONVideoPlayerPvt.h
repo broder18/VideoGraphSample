@@ -45,7 +45,7 @@ public:
 
     ~GRAPH_CONTROL();
 
-    void BuildGraph(BVP_SETTINGS* pSettings);
+    void BuildGraph(BVP_SETTINGS* pSettings, char* psz_file_name);
     void PlaceRenderer(HWND h_container_wnd) const;
     void GetPositions(DWORD* percent);
     void SetPosition(DWORD percent);

@@ -34,8 +34,6 @@ namespace VideoGraphSample
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.trackBar_Player = new System.Windows.Forms.TrackBar();
-            this.pictureBox_Player = new System.Windows.Forms.PictureBox();
             this.rendererContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuItemSize11 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSize12 = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,30 +41,8 @@ namespace VideoGraphSample
             this.menuItemSize14 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuItemShowTelemetry = new System.Windows.Forms.ToolStripMenuItem();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar_Player)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Player)).BeginInit();
             this.rendererContextMenu.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // trackBar_Player
-            // 
-            this.trackBar_Player.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.trackBar_Player.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.trackBar_Player.LargeChange = 0;
-            this.trackBar_Player.Location = new System.Drawing.Point(0, 316);
-            this.trackBar_Player.Maximum = 100;
-            this.trackBar_Player.Name = "trackBar_Player";
-            this.trackBar_Player.Size = new System.Drawing.Size(384, 45);
-            this.trackBar_Player.TabIndex = 0;
-            // 
-            // pictureBox_Player
-            // 
-            this.pictureBox_Player.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox_Player.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox_Player.Name = "pictureBox_Player";
-            this.pictureBox_Player.Size = new System.Drawing.Size(384, 316);
-            this.pictureBox_Player.TabIndex = 1;
-            this.pictureBox_Player.TabStop = false;
             // 
             // rendererContextMenu
             // 
@@ -78,36 +54,44 @@ namespace VideoGraphSample
             this.toolStripSeparator1,
             this.menuItemShowTelemetry});
             this.rendererContextMenu.Name = "rendererContextMenu";
-            this.rendererContextMenu.Size = new System.Drawing.Size(181, 142);
+            this.rendererContextMenu.Size = new System.Drawing.Size(155, 120);
             // 
             // menuItemSize11
             // 
             this.menuItemSize11.Name = "menuItemSize11";
-            this.menuItemSize11.Size = new System.Drawing.Size(154, 22);
+            this.menuItemSize11.Size = new System.Drawing.Size(180, 22);
+            this.menuItemSize11.Tag = "1";
             this.menuItemSize11.Text = "1:1";
+            this.menuItemSize11.Click += new System.EventHandler(this.menuItemSize1X_Click);
             // 
             // menuItemSize12
             // 
             this.menuItemSize12.Name = "menuItemSize12";
-            this.menuItemSize12.Size = new System.Drawing.Size(154, 22);
+            this.menuItemSize12.Size = new System.Drawing.Size(180, 22);
+            this.menuItemSize12.Tag = "2";
             this.menuItemSize12.Text = "1:2";
+            this.menuItemSize12.Click += new System.EventHandler(this.menuItemSize1X_Click);
             // 
             // menuItemSize13
             // 
             this.menuItemSize13.Name = "menuItemSize13";
-            this.menuItemSize13.Size = new System.Drawing.Size(154, 22);
+            this.menuItemSize13.Size = new System.Drawing.Size(180, 22);
+            this.menuItemSize13.Tag = "3";
             this.menuItemSize13.Text = "1:3";
+            this.menuItemSize13.Click += new System.EventHandler(this.menuItemSize1X_Click);
             // 
             // menuItemSize14
             // 
             this.menuItemSize14.Name = "menuItemSize14";
-            this.menuItemSize14.Size = new System.Drawing.Size(154, 22);
+            this.menuItemSize14.Size = new System.Drawing.Size(180, 22);
+            this.menuItemSize14.Tag = "4";
             this.menuItemSize14.Text = "1:4";
+            this.menuItemSize14.Click += new System.EventHandler(this.menuItemSize1X_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(151, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // menuItemShowTelemetry
             // 
@@ -121,26 +105,20 @@ namespace VideoGraphSample
             // RendererContainerForm
             // 
             this.ClientSize = new System.Drawing.Size(384, 361);
-            this.Controls.Add(this.pictureBox_Player);
-            this.Controls.Add(this.trackBar_Player);
-            this.MinimumSize = new System.Drawing.Size(400, 400);
+            this.ContextMenuStrip = this.rendererContextMenu;
+            this.MinimumSize = new System.Drawing.Size(240, 240);
             this.Name = "RendererContainerForm";
             this.Activated += new System.EventHandler(this.RendererContainerForm_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RendererContainerForm_FormClosing);
             this.ResizeBegin += new System.EventHandler(this.RendererContainerForm_ResizeBegin);
             this.ResizeEnd += new System.EventHandler(this.RendererContainerForm_ResizeEnd);
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar_Player)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Player)).EndInit();
+            this.Resize += new System.EventHandler(this.RendererContainerForm_Resize);
             this.rendererContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
-
-        private TrackBar trackBar_Player;
-        private PictureBox pictureBox_Player;
         private ContextMenuStrip rendererContextMenu;
         private ToolStripMenuItem menuItemSize11;
         private ToolStripMenuItem menuItemSize12;

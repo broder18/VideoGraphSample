@@ -2,7 +2,6 @@
 #include <dshow.h>
 #include "BIONVideoPlayerPvt.h"
 #include "GraphBuilder.h"
-#include "Filters.h"
 
 #define CATCHALL                                            \
 	}                                                       \
@@ -94,10 +93,10 @@ extern "C" void EXPORT bvpClose()
 }
 
 
-extern "C" BOOL EXPORT bvpOpen(BVP_SETTINGS *p_settings)
+extern "C" BOOL EXPORT bvpOpen(BVP_SETTINGS *p_settings, char* psz_file_name)
 {
     USES_CONVERSION;
-    if (sizeof(*p_settings) != sizeof(BVP_SETTINGS)) return FALSE;
+    if (p_settings->Size != sizeof(BVP_SETTINGS)) return FALSE;
 
     bvpClose();
 
@@ -106,7 +105,7 @@ extern "C" BOOL EXPORT bvpOpen(BVP_SETTINGS *p_settings)
     TRY
         SetErrorMessage("new CGraph() failed");
         pGraphControl = new GRAPH_CONTROL();
-        pGraphControl->BuildGraph(p_settings);
+        pGraphControl->BuildGraph(p_settings, psz_file_name);
         return TRUE;
     CATCHALL
     
@@ -121,6 +120,7 @@ extern "C" LPCTSTR EXPORT bvpGetLastError()
 
 extern "C" BOOL EXPORT bvpResizeRenderer(const HWND h_container_wnd)
 {
+    if (pGraphControl == nullptr) return TRUE;
     TRY
         pGraphControl->PlaceRenderer(h_container_wnd);
         return TRUE;
@@ -201,3 +201,4 @@ extern "C" BOOL EXPORT bvpSetStop()
         return TRUE;
     CATCHALLFALSE
 }
+

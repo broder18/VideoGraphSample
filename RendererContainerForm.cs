@@ -19,7 +19,7 @@ namespace VideoGraphSample
         private const int BordersWidth = ImageBorderWidth * 2;
         private const int BordersHeight = ImageBorderHeight * 2;
 
-        private const int TrackBarHeight = 45;
+        //private const int TrackBarHeight = 45;
 
         /* WM_SIZING message operates with the coordinates of the whole window but we need to work with its client part */
         /* In order to abstract from the current window style, we remember the differences between the windows and client sizes */
@@ -34,14 +34,14 @@ namespace VideoGraphSample
         public EventHandler OnMoveBegin { get; set; }
         public EventHandler OnMoveEnd { get; set; }
 
-        /* inform about telemtry enabling/disabling */
+        /* inform about telemetry enabling/disabling */
         public EventHandler OnTelemetryEnableChange { get; set; }
 
         private readonly string _baseTitle;
 
 
-        private int _oldLen;
-        private const double Prop = 300 / 400;
+        //private int _oldLen;
+        //private const double Prop = 300 / 400;
         public bool TrackBarEnabled { get; private set; }
 
         public RendererContainerForm(string basetitle, bool enableTelemetry)
@@ -52,7 +52,6 @@ namespace VideoGraphSample
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, false);
 
             _baseTitle = basetitle;
-            Text = basetitle;
             DoCreateHandle();
             SetVideoSize(VideoW / 3, VideoH / 3);
         }
@@ -107,22 +106,14 @@ namespace VideoGraphSample
             if (TrackBarEnabled)
             {
                 Dll.SetStart();
-                Dll.SetPositionTrackBar((ushort) trackBar_Player.Value);
+                //Dll.SetPositionTrackBar((ushort) trackBar_Player.Value);
                 TrackBarEnabled = false;
             }
-
         }
 
         public IntPtr GetPictureBoxHandle()
         {
-            return this.pictureBox_Player.Handle;
-        }
-
-        private void RendererContainerForm_Resize(object sender, EventArgs e)
-        {
-            Invalidate();
-            Dll.Resize(Handle);
-            Text = _baseTitle + $@"({VideoWidth} x {VideoHeight})";
+            return this.Handle;
         }
 
         protected override void WndProc(ref Message m)
@@ -187,12 +178,13 @@ namespace VideoGraphSample
 
         public void SetTrackBarPosition(ushort percent)
         {
-            this.trackBar_Player.Value = percent;
+            //this.trackBar_Player.Value = percent;
         }
 
         public ushort GetTrackBarPosition()
         {
-            return (ushort) this.trackBar_Player.Value;
+            //return (ushort) this.trackBar_Player.Value;
+            return 0;
         }
 
         private void DoCreateHandle()
@@ -268,6 +260,12 @@ namespace VideoGraphSample
             menuItemShowTelemetry.Checked = enable;
         }
 
+        private void RendererContainerForm_Resize(object sender, EventArgs e)
+        {
+            Invalidate();
+            Dll.Resize(this.Handle);
+            Text = _baseTitle + $@"({VideoWidth} x {VideoHeight})";
+        }
 
     }
 }

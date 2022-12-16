@@ -1,14 +1,13 @@
-#ifndef _IOSTRUCTS_H
-#define _IOSTRUCTS_H
+#ifndef IOSTRUCTS_H
+#define IOSTRUCTS_H
 
-#include <PshPack4.h>
+#pragma pack(push, 4)
 
 static constexpr int MAX_CHANNELS = 8;
 
 typedef struct tagChannels
 {
     int NumVideoPids;
-    int NumPMTs;
     int pids[MAX_CHANNELS];
     int pmts[MAX_CHANNELS];
     HWND hwnds[MAX_CHANNELS];
@@ -17,10 +16,9 @@ typedef struct tagChannels
 typedef struct tagBVP_Settings
 {
     DWORD Size;
-    char* fileName;
     CHANNELS AllChannels;
 } BVP_SETTINGS;
 
-#include <PopPack.h>
+#pragma pack(pop)
 
 #endif

@@ -47,9 +47,9 @@ namespace VideoGraphSample
 
         private void CreateListItems()
         {
-            foreach(var pid in _mapPids)
+            foreach(var item in _mapPids.Where(item => item.Value == true))
             {
-                var item = StatisticsList.Items.Add($"0x{pid.Key:X4}");
+                StatisticsList.Items.Add($"0x{item.Key:X4}");
             }
         }
 
@@ -58,14 +58,22 @@ namespace VideoGraphSample
             unsafe
             {
                 var channels = new Dll.AllChannels
-                    {NumVideoPids = _renderers.Length, NumPMTs = _renderers.Length};
+                    {NumVideoPids = _renderers.Length};
 
                 
                 for (int i = 0; i < _renderers.Length; i++)
                 {
                     channels.Pids[i] = Pids[i];
-                    channels.hWnds[i] = (int) _renderers[i].GetPictureBoxHandle();
+                    channels.hWnds[i] = (int) _renderers[i].Handle;
+                    Console.WriteLine(channels.hWnds[i]);
                     channels.Pmts[i] = Pmts[i];
+                }
+
+                for (int i = _renderers.Length; i < Defines.MaxChannels; i++)
+                {
+                    channels.Pids[i] = 0;
+                    channels.hWnds[i] = 0;
+                    channels.Pmts[i] = 0;
                 }
 
                 return channels;
@@ -85,8 +93,8 @@ namespace VideoGraphSample
             if (_pathFileDialog.ShowDialog() != DialogResult.OK) return;
             _mapPids?.Clear();
             CreateMap();
-            CreateListItems();
             ScanBytes.SearchSyncByte(_pathFileDialog.FileName, ref _mapPids);
+            CreateListItems();
             ShowPath();
             CreateWndRender();
             Dll.Open(_pathFileDialog.FileName, GetChannels());
@@ -257,11 +265,8 @@ namespace VideoGraphSample
             int idx = e.Item.Index;
             int mask = 1 << idx;
             bool map = e.Item.Checked;
-            //Dll.MapUnmapChannel(idx, map);
+            Dll.MapUnmapChannel(idx, map);
         }
-
-
-
         #endregion
 
         #region Utilities
@@ -376,6 +381,22 @@ namespace VideoGraphSample
             }
 
             NativeMethods.BringFormToFront(this);
+        }
+
+        #endregion
+
+        #region Menu item handlers
+        private void menuItemExit_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void menuItemOptions_Click(object sender, EventArgs e)
+        {
+            using (var frm = new SetupForm())
+            {
+                //if(frm.ShowDialog() == DialogResult.OK) SetTitle(Dll.Up);
+            }
         }
 
         #endregion

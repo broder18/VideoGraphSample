@@ -15,17 +15,15 @@ namespace VideoGraphSample
         public unsafe struct AllChannels
         {
             public int NumVideoPids;
-            public int NumPMTs;
             public fixed int Pids[Defines.MaxChannels];
             public fixed int Pmts[Defines.MaxChannels];
             public fixed int hWnds[Defines.MaxChannels];
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        public struct BvpSettings
+        private struct BvpSettings
         {
             public uint Size;
-            public string fileName;
             public AllChannels Channels;
         }
 
@@ -51,7 +49,7 @@ namespace VideoGraphSample
 
             [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpOpen", CallingConvention = CallingConvention.StdCall)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool bvpOpen(ref BvpSettings settings);
+            public static extern bool bvpOpen(ref BvpSettings settings, string fileName);
 
             [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpGetPositionTrackBar", CallingConvention = CallingConvention.StdCall)]
             [return: MarshalAs(UnmanagedType.Bool)]
@@ -61,7 +59,7 @@ namespace VideoGraphSample
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool bvpSetPositionTrackBar(ushort percent);
 
-            [DllImport("BIONVideoPayerDLL.dll", EntryPoint = "bvpSetStart", CallingConvention = CallingConvention.StdCall)]
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpSetStart", CallingConvention = CallingConvention.StdCall)]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool bvpSetStart();
 
@@ -114,13 +112,14 @@ namespace VideoGraphSample
 
         public static void Open(string path, AllChannels channels)
         {
-            if (channels.NumVideoPids < 1) return;
+            if (channels.NumVideoPids < 1) throw new Exception("Not found pids !");
             var settings = new BvpSettings();
             settings.Size = (uint)Marshal.SizeOf(settings);
-            settings.fileName = path;
             settings.Channels = channels;
-            if (!NativeMethods.bvpOpen(ref settings)) throw new Exception("bvpOpen() failed: " + GetLastError());
-            
+
+            if (!NativeMethods.bvpOpen(ref settings, path)) throw new Exception("bvpOpen() failed: " + GetLastError());
+            _dllOpened = true;
+
         }
 
         public static void Close()
