@@ -8,6 +8,7 @@ using VideoGraphSample.Properties;
 using System.IO;
 using System.Threading;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace VideoGraphSample
 {
@@ -18,8 +19,6 @@ namespace VideoGraphSample
         private int[] Pmts;
 
         private RendererContainerForm[] _renderers;
-        //private OpenFileDialog _pathFileDialog;
-
 
         private InfoForm _infoForm = new InfoForm();
         private Point[] _rendererLocations;
@@ -36,7 +35,6 @@ namespace VideoGraphSample
                 var r = AllSettings.MainForm;
                 Location = new Point(r.X, r.Y);
                 SetTitle();
-                //CreateFileDialog();
 
             }
             catch (Exception e)
@@ -47,7 +45,8 @@ namespace VideoGraphSample
 
         private void CreateListItems()
         {
-            foreach(var item in _mapPids.Where(item => item.Value == true))
+            StatisticsList.Items.Clear();
+            foreach (var item in _mapPids.Where(item => item.Value == true))
             {
                 StatisticsList.Items.Add($"0x{item.Key:X4}");
             }
@@ -87,50 +86,30 @@ namespace VideoGraphSample
             CloseWndRender();
         }
 
-        private void button_PathFile_Click(object sender, EventArgs e)
-        {
-            if (Dll._dllOpened) CloseWndRender();
-            //if (_pathFileDialog.ShowDialog() != DialogResult.OK) return;
-            _mapPids?.Clear();
-            CreateMap();
-            //ScanBytes.SearchSyncByte(_pathFileDialog.FileName, ref _mapPids);
-            CreateListItems();
-            //ShowPath();
-            CreateWndRender();
-            //Dll.Open(_pathFileDialog.FileName, GetChannels());
-            Dll.SetStart();
-            //TurnOnTimerUpdate();
-            //Dll.SetStart();
-        }
-
         private void Start(string filePath)
         {
-            if (Dll._dllOpened) CloseWndRender();
-            _mapPids?.Clear();
+            if (Dll._dllOpened)
+            {
+                _mapPids?.Clear();
+                CloseWndRender();
+                Dll.Close();
+            }
+            
             CreateMap();
             ScanBytes.SearchSyncByte(filePath, ref _mapPids);
             CreateListItems();
             CreateWndRender();
             Dll.Open(filePath, GetChannels());
             Dll.SetStart();
+            //TurnOnTimerUpdate();
         }
 
         #region Setup Form
-
-        /*private void CreateFileDialog()
-        {
-            _pathFileDialog = new OpenFileDialog {Title = @"Выберите файл", Filter = @"Video files(*.ts)|*.ts"};
-        }*/
 
         private void SetTitle(bool ok = true)
         {
             Text = @"BION Video Player ";
         }
-
-        /*private void ShowPath()
-        {
-            path_textBox.Text = _pathFileDialog.FileName;
-        }*/
 
         #endregion
 
@@ -226,6 +205,112 @@ namespace VideoGraphSample
             }
 
             return -1;
+        }
+
+        public void menuItemSetScale_Click(object sender, EventArgs e)
+        {
+            int scale = GetMenuItemScale(sender);
+            if (scale <= 0) return;
+
+            int w = Defines.VideoW / scale;
+            int h = Defines.VideoH / scale;
+
+            foreach(var rend in _renderers) rend.SetVideoSize(w, h);
+        }
+
+        private void menuItemWindow1X_Click(object sender, EventArgs e)
+        {
+            int scale = GetMenuItemScale(sender);
+            if (scale <= 0) return;
+
+            var rend = GetSelectedRenderer();
+            if (rend == null) return;
+
+            int w = Defines.VideoW / scale;
+            int h = Defines.VideoH / scale;
+            rend.SetVideoSize(w, h);
+        }
+
+        private void menuItemCascade_Click(object sender, EventArgs e)
+        {
+            var visrenderers = GetVisibleRenderers();
+            if (visrenderers == null || visrenderers.Length < 2) return;
+
+            for (int i = 0; i < visrenderers.Length; i++)
+            {
+                var rend = visrenderers[i];
+                rend.Left = Defines.CascadeOffsetX * i;
+                rend.Top = Defines.CascadeOffsetY * i;
+                NativeMethods.BringFormToFront(rend);
+            }
+
+        }
+
+        private void menuItemToLargest_Click(object sender, EventArgs e)
+        {
+            int maxW = int.MinValue;
+            foreach (var rend in _renderers)
+            {
+                if (rend.VideoWidth > maxW) maxW = rend.VideoWidth;
+            }
+
+            foreach(var rend in _renderers) rend.SetVideoWidth(maxW);
+        }
+
+        private void menuItemToSmallest_Click(object sender, EventArgs e)
+        {
+            int minW = int.MaxValue;
+            foreach (var rend in _renderers)
+            {
+                if (rend.VideoWidth < minW) minW = rend.VideoWidth;
+            }
+
+            foreach(var rend in _renderers) rend.SetVideoWidth(minW);
+        }
+
+        private void menuItemTileFitToDesktop_Click(object sender, EventArgs e)
+        {
+            var visrenderers = GetVisibleRenderers();
+            if (visrenderers == null || visrenderers.Length < 2) return;
+
+            var desktop = Screen.PrimaryScreen.WorkingArea;
+            int numrows = (visrenderers.Length + Defines.GridSize - 1) / Defines.GridSize;
+
+            var rend = visrenderers[0];
+
+            var diff = rend.GetWindowVideoDifference();
+
+            int maxWindowW = desktop.Width / Defines.GridSize;
+            int maxWindowH = desktop.Height / numrows;
+            int maxVideoW = maxWindowW - diff.Width;
+            int maxVideoH = maxWindowH - diff.Height;
+
+            bool useH = visrenderers[0].W2H(maxWindowW) > maxVideoH;
+
+            foreach (var r in visrenderers)
+            {
+                if (useH) r.SetVideoHeight(maxVideoH);
+                else r.SetVideoWidth(maxVideoW);
+            }
+
+            int i = 0;
+            int rendW = rend.Width;
+            int rendH = rend.Height;
+            for (int row = 0; row < Defines.GridSize; row++)
+            {
+                int y = row * rendH;
+                for (int col = 0; col < Defines.GridSize; col++)
+                {
+                    if (i >= visrenderers.Length) break;
+
+                    int x = col * rendW;
+                    visrenderers[i].Left = x;
+                    visrenderers[i].Top = y;
+                    i++;
+                }
+
+                if (i >= visrenderers.Length) break;
+            }
         }
 
         #endregion
@@ -377,6 +462,18 @@ namespace VideoGraphSample
 
         }
 
+        private RendererContainerForm[] GetVisibleRenderers()
+        {
+            var lst = new List<RendererContainerForm>();
+
+            foreach (var rend in _renderers)
+            {
+                if(NativeMethods.IsWindowVisible(rend.Handle)) lst.Add(rend);
+            }
+
+            return lst.ToArray();
+        }
+
         #endregion
 
         #region Form handlers
@@ -406,8 +503,9 @@ namespace VideoGraphSample
         {
             using (var frm = new SetupForm())
             {
-                if ((frm.ShowDialog() == DialogResult.OK) && frm.FilePath!= null)
+                if ((frm.ShowDialog() == DialogResult.OK) && frm.FilePath != null)
                 {
+                    int sas = 4;
                     Start(frm.FilePath);
                 }
             }
