@@ -8,6 +8,7 @@ using VideoGraphSample.Properties;
 using System.IO;
 using System.Threading;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
 namespace VideoGraphSample
@@ -79,12 +80,6 @@ namespace VideoGraphSample
             }
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Dll.Close();
-            TurnOffTimerUpdate();
-            CloseWndRender();
-        }
 
         private void Start(string filePath)
         {
@@ -183,10 +178,14 @@ namespace VideoGraphSample
         private void CloseWndRender()
         {
             if (_renderers == null) return;
-            foreach (var render in _renderers)
+
+            for (int i = 0; i < _renderers.Length; i++)
             {
-                render.Close();
+                var rend = _renderers[i];
+                AllSettings.Renderers[i] = new Rectangle(rend.Left, rend.Top, rend.VideoWidth, rend.VideoHeight);
+                rend.DoClose();
             }
+            
             _renderers = null;
             Pids = null;
             Pmts = null;
@@ -313,6 +312,107 @@ namespace VideoGraphSample
             }
         }
 
+        private void menuItemTileFit1X_click(object sender, EventArgs e)
+        {
+            var visrenderers = GetVisibleRenderers();
+            if (visrenderers == null || visrenderers.Length < 2) return;
+
+            int scale = GetMenuItemScale(sender);
+            if (scale <= 0) return;
+
+            int w = Defines.VideoW / scale;
+            int h = Defines.VideoH / scale;
+
+            foreach(var rend in visrenderers) rend.SetVideoSize(w, h);
+
+            int i = 0;
+            int rendW = visrenderers[0].Width;
+            int rendH = visrenderers[0].Height;
+            for (int row = 0; row < Defines.GridSize; row++)
+            {
+                int y = row * rendH;
+                for (int col = 0; col < Defines.GridSize; col++)
+                {
+                    if (i >= visrenderers.Length) break;
+
+                    int x = col * rendW;
+                    visrenderers[i].Left = x;
+                    visrenderers[i].Top = y;
+                    i++;
+                }
+
+                if (i >= visrenderers.Length) break;
+            }
+        }
+
+        private void menuItemExit_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void menuItemOptions_Click(object sender, EventArgs e)
+        {
+            using (var frm = new SetupForm())
+            {
+                if ((frm.ShowDialog() == DialogResult.OK) && frm.FilePath != null)
+                {
+                    int sas = 4;
+                    Start(frm.FilePath);
+                }
+            }
+        }
+
+        private void menuItemEnableAll_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in StatisticsList.Items) item.Checked = true;
+        }
+
+        private void menuItemDisableAll_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in StatisticsList.Items) item.Checked = false;
+        }
+
+        private void menuItemShowAll_Click(object sender, EventArgs e)
+        {
+            foreach(var rend in _renderers) NativeMethods.ShowNA(rend);
+        }
+
+        private void menuItemShowHide_Click(object sender, EventArgs e)
+        {
+            StatisticsList_DoubleClick(StatisticsList, EventArgs.Empty);
+        }
+
+        private void menuItemEnableDisable_Click(object sender, EventArgs e)
+        {
+            var item = StatisticsList.FocusedItem;
+            if (item != null) item.Checked = !item.Checked;
+        }
+
+        private void menuItemDisableAllButThis_Click(object sender, EventArgs e)
+        {
+            var selitem = StatisticsList.FocusedItem;
+            if (selitem == null) return;
+            foreach (ListViewItem item in StatisticsList.Items)
+            {
+                item.Checked = item == selitem;
+            }
+        }
+
+        private void menuItemHideAllButThis_Click(object sender, EventArgs e)
+        {
+            var selrend = GetSelectedRenderer();
+            if (selrend == null) return;
+
+            for (int i = 0; i < _renderers.Length; i++)
+            {
+                var rend = _renderers[i];
+                if (rend == selrend) continue;
+                var item = FindRendererItem(rend);
+                if (item != null) item.Checked = false;
+                NativeMethods.HideNA(rend);
+            }
+        }
+
         #endregion
 
         #region Renderer stuff
@@ -362,6 +462,17 @@ namespace VideoGraphSample
             int mask = 1 << idx;
             bool map = e.Item.Checked;
             Dll.MapUnmapChannel(idx, map);
+        }
+
+        private void StatisticsList_DoubleClick(object sender, EventArgs e)
+        {
+
+        }
+
+        private void StatisticsList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var rend = GetSelectedRenderer();
+            if (rend != null && NativeMethods.IsWindowVisible(rend.Handle)) NativeMethods.BringFormToFront(rend);
         }
         #endregion
 
@@ -491,24 +602,49 @@ namespace VideoGraphSample
             NativeMethods.BringFormToFront(this);
         }
 
-        #endregion
-
-        #region Menu item handlers
-        private void menuItemExit_Click(object sender, EventArgs e)
+        private void MainForm_Resize(object sender, EventArgs e)
         {
-            Close();
+            switch (WindowState)
+            {
+                case FormWindowState.Minimized:
+                    var hwnds = GetRendererHandles();
+                    Utils.GetZOrderedForms(ref hwnds);
+                    _visiblerenderers = new List<IntPtr>();
+                    foreach (var hwnd in hwnds)
+                    {
+                        if (NativeMethods.IsWindowVisible(hwnd))
+                        {
+                            _visiblerenderers.Add(hwnd);
+                            NativeMethods.HideNA(hwnd);
+                        }
+                    }
+                    break;
+
+                case FormWindowState.Normal:
+                    if (_visiblerenderers != null)
+                    {
+                        foreach (var hwnd in _visiblerenderers) NativeMethods.ShowNA(hwnd);
+                        _visiblerenderers = null;
+                    }
+                    break;
+            }
         }
 
-        private void menuItemOptions_Click(object sender, EventArgs e)
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            using (var frm = new SetupForm())
-            {
-                if ((frm.ShowDialog() == DialogResult.OK) && frm.FilePath != null)
-                {
-                    int sas = 4;
-                    Start(frm.FilePath);
-                }
-            }
+            TurnOffTimerUpdate();
+            Activated -= MainForm_Activated;
+            foreach(var rend in _renderers) NativeMethods.HideNA(rend);
+            Hide();
+            Dll.Close();
+
+            CloseWndRender();
+            _infoForm.Close();
+            _infoForm = null;
+
+            AllSettings.MainForm = new Rectangle(Left, Top, Width, Height);
+            AllSettings.Save();
+            
         }
 
         #endregion

@@ -71,7 +71,7 @@ namespace VideoGraphSample
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool bvpSetStop();
 
-            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpSetTelemtryPosition", CallingConvention = CallingConvention.StdCall)]
+            [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpSetTelemetryPosition", CallingConvention = CallingConvention.StdCall)]
             public static extern void bvpSetTelemetryPosition(int x, int y);
 
             [DllImport("BIONVideoPlayerDLL.dll", EntryPoint = "bvpSetTelemetryAlpha")]
@@ -130,21 +130,25 @@ namespace VideoGraphSample
 
         public static void Resize(IntPtr hwnd)
         {
+            if (!_dllOpened) return; 
             if (!NativeMethods.bvpResizeRenderer(hwnd)) throw new Exception("bvpResizeRenderer() failed: " + GetLastError());
         }
 
         public static void UpdateTelemetryPosition()
         {
+            if (!_dllOpened) return;
             NativeMethods.bvpSetTelemetryPosition(AllSettings.TelemetryPosX, AllSettings.TelemetryPosY);
         }
 
         public static void UpdateTelemetryAlpha()
         {
+            if (!_dllOpened) return;
             NativeMethods.bvpSetTelemetryAlpha(AllSettings.TelemetryAlpha);
         }
 
         public static void UpdateTelemetryColors()
         {
+            if (!_dllOpened) return;
             NativeMethods.bvpSetTelemetryColors(AllSettings.TelemetryTxtColor, AllSettings.TelemetryBkgColor);
         }
 

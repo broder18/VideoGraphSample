@@ -113,6 +113,7 @@ namespace VideoGraphSample
 
         public IntPtr GetPictureBoxHandle()
         {
+            
             return this.Handle;
         }
 
@@ -220,7 +221,7 @@ namespace VideoGraphSample
             }
         }
 
-        private void DoClose()
+        public void DoClose()
         {
             FormClosing -= RendererContainerForm_FormClosing;
             Close();

@@ -43,7 +43,6 @@ void GRAPH_CONTROL::AddTSFileSource(char* psz_file_name)
     USES_CONVERSION;
     LPCOLESTR pFileCOLE = A2COLE(psz_file_name);
     AddFilter(CLSID_TSFileSource, TSFileSourceName);
-    //pTSFileSource = QI<IFileSourceFilter>(TSFileSourceName, IID_IFileSourceFilter);
     pTSFileSource = QI<ITSFileSource>(TSFileSourceName, IID_IFileSourceFilter);
     CMediaType pmt;
     PrepareMediaType(&pmt);
