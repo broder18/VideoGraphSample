@@ -9,6 +9,8 @@ namespace VideoGraphSample
 {
     public sealed partial class RendererContainerForm : Form
     {
+        public VideoPlayControl _videoPlayControl;
+
         private const int VideoW = Defines.VideoW;
         private const int VideoH = Defines.VideoH;
         private const double AspectRatio = (double) VideoW / VideoH;
@@ -43,6 +45,15 @@ namespace VideoGraphSample
         //private int _oldLen;
         //private const double Prop = 300 / 400;
         public bool TrackBarEnabled { get; private set; }
+
+        #region VideoPlayer handle
+
+        private void CreateVideoControl()
+        {
+            _videoPlayControl = new VideoPlayControl(this.Location, this.Size);
+        }
+
+        #endregion
 
         public RendererContainerForm(string basetitle, bool enableTelemetry)
         {

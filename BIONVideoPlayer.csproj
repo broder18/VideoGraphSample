@@ -85,6 +85,12 @@
       <DependentUpon>Setup.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils.cs" />
+    <Compile Include="VideoPlayControl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VideoPlayControl.Designer.cs">
+      <DependentUpon>VideoPlayControl.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="InfoForm.resx">
       <DependentUpon>InfoForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -99,12 +105,16 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="RendererContainerForm.resx">
       <DependentUpon>RendererContainerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Setup.resx">
       <DependentUpon>Setup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VideoPlayControl.resx">
+      <DependentUpon>VideoPlayControl.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -120,6 +130,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="PlayPause3.jpg" />
+    <None Include="PlayPause2.png" />
     <Content Include="rat.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

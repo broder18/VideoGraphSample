@@ -59,7 +59,7 @@ namespace VideoGraphSample
             // menuItemSize11
             // 
             this.menuItemSize11.Name = "menuItemSize11";
-            this.menuItemSize11.Size = new System.Drawing.Size(180, 22);
+            this.menuItemSize11.Size = new System.Drawing.Size(154, 22);
             this.menuItemSize11.Tag = "1";
             this.menuItemSize11.Text = "1:1";
             this.menuItemSize11.Click += new System.EventHandler(this.menuItemSize1X_Click);
@@ -67,7 +67,7 @@ namespace VideoGraphSample
             // menuItemSize12
             // 
             this.menuItemSize12.Name = "menuItemSize12";
-            this.menuItemSize12.Size = new System.Drawing.Size(180, 22);
+            this.menuItemSize12.Size = new System.Drawing.Size(154, 22);
             this.menuItemSize12.Tag = "2";
             this.menuItemSize12.Text = "1:2";
             this.menuItemSize12.Click += new System.EventHandler(this.menuItemSize1X_Click);
@@ -75,7 +75,7 @@ namespace VideoGraphSample
             // menuItemSize13
             // 
             this.menuItemSize13.Name = "menuItemSize13";
-            this.menuItemSize13.Size = new System.Drawing.Size(180, 22);
+            this.menuItemSize13.Size = new System.Drawing.Size(154, 22);
             this.menuItemSize13.Tag = "3";
             this.menuItemSize13.Text = "1:3";
             this.menuItemSize13.Click += new System.EventHandler(this.menuItemSize1X_Click);
@@ -83,7 +83,7 @@ namespace VideoGraphSample
             // menuItemSize14
             // 
             this.menuItemSize14.Name = "menuItemSize14";
-            this.menuItemSize14.Size = new System.Drawing.Size(180, 22);
+            this.menuItemSize14.Size = new System.Drawing.Size(154, 22);
             this.menuItemSize14.Tag = "4";
             this.menuItemSize14.Text = "1:4";
             this.menuItemSize14.Click += new System.EventHandler(this.menuItemSize1X_Click);
@@ -91,14 +91,14 @@ namespace VideoGraphSample
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(151, 6);
             // 
             // menuItemShowTelemetry
             // 
             this.menuItemShowTelemetry.Checked = true;
             this.menuItemShowTelemetry.CheckState = System.Windows.Forms.CheckState.Checked;
             this.menuItemShowTelemetry.Name = "menuItemShowTelemetry";
-            this.menuItemShowTelemetry.Size = new System.Drawing.Size(180, 22);
+            this.menuItemShowTelemetry.Size = new System.Drawing.Size(154, 22);
             this.menuItemShowTelemetry.Text = "ShowTelemetry";
             this.menuItemShowTelemetry.Click += new System.EventHandler(this.menuItemShowTelemetry_Click);
             // 
