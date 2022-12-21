@@ -44,16 +44,7 @@ namespace VideoGraphSample
 
         //private int _oldLen;
         //private const double Prop = 300 / 400;
-        public bool TrackBarEnabled { get; private set; }
-
-        #region VideoPlayer handle
-
-        private void CreateVideoControl()
-        {
-            _videoPlayControl = new VideoPlayControl(this.Location, this.Size);
-        }
-
-        #endregion
+        //public bool TrackBarEnabled { get; private set; }
 
         public RendererContainerForm(string basetitle, bool enableTelemetry)
         {
@@ -106,7 +97,7 @@ namespace VideoGraphSample
             set => base.Text = value;
         }
 
-        private void click_MouseDown(object sender, EventArgs e)
+        /*private void click_MouseDown(object sender, EventArgs e)
         {
             TrackBarEnabled = true;
             Dll.SetStop();
@@ -120,7 +111,7 @@ namespace VideoGraphSample
                 //Dll.SetPositionTrackBar((ushort) trackBar_Player.Value);
                 TrackBarEnabled = false;
             }
-        }
+        }*/
 
         public IntPtr GetPictureBoxHandle()
         {

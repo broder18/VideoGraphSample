@@ -20,6 +20,7 @@ namespace VideoGraphSample
         private int[] Pmts;
 
         private RendererContainerForm[] _renderers;
+        private VideoPlayControl _controlVideoPanel;
 
         private InfoForm _infoForm = new InfoForm();
         private Point[] _rendererLocations;
@@ -96,8 +97,30 @@ namespace VideoGraphSample
             CreateWndRender();
             Dll.Open(filePath, GetChannels());
             Dll.SetStart();
-            //TurnOnTimerUpdate();
+            _controlVideoPanel = new VideoPlayControl();
+            TurnOnTimerUpdate();
         }
+
+        #region Timer function
+
+        public void TurnOnTimerUpdate()
+        {
+            if (timer_updateTrackBar.Enabled) return;
+            timer_updateTrackBar.Start();
+        }
+
+        public void TurnOffTimerUpdate()
+        {
+            if (!timer_updateTrackBar.Enabled) return;
+            timer_updateTrackBar.Stop();
+        }
+
+        private void timer_updateTrackBar_Tick(object sender, EventArgs e)
+        {
+            if(!_controlVideoPanel.Paused) _controlVideoPanel.Get_trackBar_Position();
+        }
+
+        #endregion
 
         #region Setup Form
 
@@ -647,8 +670,9 @@ namespace VideoGraphSample
             
         }
 
+
         #endregion
 
-
+        
     }
 }

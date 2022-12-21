@@ -59,9 +59,6 @@
       <DependentUpon>InfoForm.cs</DependentUpon>
     </Compile>
     <Compile Include="IniFile.cs" />
-    <Compile Include="MainForm.TrackBarControl.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="NativeMethods.cs" />
     <Compile Include="RendererContainerForm.cs">
       <SubType>Form</SubType>
