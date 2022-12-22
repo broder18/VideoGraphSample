@@ -60,12 +60,15 @@ namespace VideoGraphSample
             // 
             // VideoPlayControl
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(645, 50);
             this.Controls.Add(this.trackBar_Player);
             this.Controls.Add(this.btn_Play);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "VideoPlayControl";
             this.Text = "VideoPlay";
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_Player)).EndInit();

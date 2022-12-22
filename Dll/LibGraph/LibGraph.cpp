@@ -97,7 +97,7 @@ CGraph::CGraph(bool bDebug)
 // dtor just clears the STL containers which will cause the contained
 // COM smart ptrs to release themselves automagically
 // None of the methods used here throw
-//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////m_pGraph
 CGraph::~CGraph()
 {
     // We dont care if this fails as we are shutting shop

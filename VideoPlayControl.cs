@@ -25,12 +25,20 @@ namespace VideoGraphSample
         {
             ushort percent = 0;
             Dll.GetPositionTrackBar(ref percent);
+            
             trackBar_Player.Value = percent;
+            Console.WriteLine(percent);
+            if (percent == 100) btn_Play.Enabled = false;
+            else
+            {
+                btn_Play.Enabled = true;
+            }
         }
 
         private void Set_trackBar_Position()
         {
             Dll.SetPositionTrackBar((ushort)trackBar_Player.Value);
+            
         }
 
         private void trackBar_Player_MouseDown(object sender, MouseEventArgs e)

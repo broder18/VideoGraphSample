@@ -43,7 +43,7 @@ void GRAPH_CONTROL::AddTSFileSource(char* psz_file_name)
     USES_CONVERSION;
     LPCOLESTR pFileCOLE = A2COLE(psz_file_name);
     AddFilter(CLSID_TSFileSource, TSFileSourceName);
-    pTSFileSource = QI<ITSFileSource>(TSFileSourceName, IID_IFileSourceFilter);
+    CComPtr<IFileSourceFilter> pTSFileSource =  QI<IFileSourceFilter>(TSFileSourceName, IID_IFileSourceFilter);
     CMediaType pmt;
     PrepareMediaType(&pmt);
     CHECK_HR(pTSFileSource->Load(pFileCOLE, &pmt), "TSFileSource Load() function failed");
@@ -249,28 +249,24 @@ void GRAPH_CONTROL::MapUnmap(const int ch, const bool map)
     }
 }
 
-
 void GRAPH_CONTROL::GetPositions(DWORD* percent)
 {
-    CComPtr<ITSFileSource> pTSPushFileSourceSeeking = QI<ITSFileSource>(TSFileSourceName, IID_ITSFileSource);
-    LONGLONG start_position = 0, stop_position = 0;
-    CHECK_HR(pTSPushFileSourceSeeking->GetPosition(&start_position, &stop_position), "ITSFileSource::GetPosition() failed");
+    LONGLONG start_position, stop_position;
+    CHECK_HR(pIMediaSeeking->GetPositions(&start_position, &stop_position), "IMediaSeeking::GetPosition() failed");
     *percent = static_cast<DWORD>(start_position * 100 / stop_position);
-  
 }
 
 void GRAPH_CONTROL::SetPosition(const DWORD percent)
 {
-    CComPtr<ITSFileSource> pTSPushFileSourceSeeking = QI<ITSFileSource>(TSFileSourceName, IID_ITSFileSource);
     LONGLONG current_position = 0, stop_position = 0;
-    CHECK_HR(pTSPushFileSourceSeeking->GetPosition(&current_position, &stop_position), "ITSFileSource::GetPosition() failed");
+    CHECK_HR(pIMediaSeeking->GetPositions(&current_position, &stop_position), "ITSFileSource::GetPosition() failed");
     current_position = stop_position / 100 * percent;
-    CHECK_HR(pTSPushFileSourceSeeking->SetPosition(&current_position, &stop_position), "ITSFileSource::SetPosition() failed");
+    CHECK_HR(pIMediaSeeking->SetPositions(&current_position, AM_SEEKING_AbsolutePositioning, &stop_position, AM_SEEKING_AbsolutePositioning), "ITSFileSource::SetPosition() failed");
 }
 
 void GRAPH_CONTROL::SetStart()
 {
-    Start();
+    Start();	
 }
 
 void GRAPH_CONTROL::SetPause()
@@ -283,6 +279,14 @@ void GRAPH_CONTROL::SetStop()
     Stop();
 }
 
+void GRAPH_CONTROL::GetIMediaSeeking()
+{
+    CComPtr<IGraphBuilder> pGraphBuilder = GetFilterGraph();
+    pIMediaSeeking = CComQIPtr<IMediaSeeking>(pGraphBuilder);
+    if (!pIMediaSeeking) throw Exception(E_NOINTERFACE, "Unable to query IMediaSeeking");
+}
+
+
 void GRAPH_CONTROL::BuildGraph(BVP_SETTINGS *p_settings, char* psz_file_name)
 {
     
@@ -291,7 +295,9 @@ void GRAPH_CONTROL::BuildGraph(BVP_SETTINGS *p_settings, char* psz_file_name)
     AddVideoDecoder(&p_settings->AllChannels);
     AddVideoRenderer(&p_settings->AllChannels);
     AddPMTPvtData(&p_settings->AllChannels);
-    
+    GetIMediaSeeking();
+
+	
     //Start();
     /*for (int i = 0; i < p_settings->AllChannels.NumVideoPids; i++) UsedPids[i] = p_settings->AllChannels.pids[i]; */
 }

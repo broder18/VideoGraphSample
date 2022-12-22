@@ -20,7 +20,7 @@ namespace VideoGraphSample
         private int[] Pmts;
 
         private RendererContainerForm[] _renderers;
-        private VideoPlayControl _controlVideoPanel;
+        private VideoPlayControl _controlVideoPanel = new VideoPlayControl();
 
         private InfoForm _infoForm = new InfoForm();
         private Point[] _rendererLocations;
@@ -84,8 +84,12 @@ namespace VideoGraphSample
 
         private void Start(string filePath)
         {
+            
             if (Dll._dllOpened)
             {
+                TurnOffTimerUpdate();
+                _controlVideoPanel.Hide();
+                NativeMethods.HideNA(_controlVideoPanel);
                 _mapPids?.Clear();
                 CloseWndRender();
                 Dll.Close();
@@ -97,9 +101,22 @@ namespace VideoGraphSample
             CreateWndRender();
             Dll.Open(filePath, GetChannels());
             Dll.SetStart();
-            _controlVideoPanel = new VideoPlayControl();
             TurnOnTimerUpdate();
+            NativeMethods.ShowNA(_controlVideoPanel);
+            _controlVideoPanel.Visible = true;
+            
         }
+
+        /*private void Stop()
+        {
+            if (!Dll._dllOpened) return;
+
+
+            _mapPids?.Clear();
+            CloseWndRender();
+            Dll.Close();
+
+        }*/
 
         #region Timer function
 
@@ -655,9 +672,14 @@ namespace VideoGraphSample
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            TurnOffTimerUpdate();
+            if (Dll._dllOpened)
+            {
+                TurnOffTimerUpdate();
+                foreach (var rend in _renderers) NativeMethods.HideNA(rend);
+            }
+            
             Activated -= MainForm_Activated;
-            foreach(var rend in _renderers) NativeMethods.HideNA(rend);
+            
             Hide();
             Dll.Close();
 
