@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace VideoGraphSample
@@ -13,6 +7,8 @@ namespace VideoGraphSample
     public partial class VideoPlayControl : Form
     {
         public bool Paused { get; private set; }
+        private bool Moving = false;
+        private Point Offset;
         
         public VideoPlayControl()
         {
@@ -43,6 +39,7 @@ namespace VideoGraphSample
 
         private void trackBar_Player_MouseDown(object sender, MouseEventArgs e)
         {
+            Paused = true;
             Dll.SetPause();
         }
 
@@ -50,24 +47,19 @@ namespace VideoGraphSample
         {
             Set_trackBar_Position();
             if (trackBar_Player.Value != 100) Dll.SetStart();
+            Paused = false;
         }
 
         #endregion
-
-
         #region Form Control
 
         private void SetStart()
         {
             if (!Dll._dllOpened) return;
-            if (Paused) Dll.SetStart();
+            if (!Paused) Dll.SetStart();
             else
                 Dll.SetPause();
         }
-
-        #endregion Form Control
-
-        #region Form handler
 
         public void VideoPlayControl_Paused(object sender, EventArgs e)
         {
@@ -75,6 +67,32 @@ namespace VideoGraphSample
             SetStart();
         }
 
+        #endregion Form Control
+        #region Form handler
+
+        private void VideoPlayControl_MouseDown(object sender, MouseEventArgs e)
+        {
+            Moving = true;
+            Offset = new Point(e.X, e.Y);
+        }
+
+        private void VideoPlayControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (Moving)
+            {
+                Point newLocation = this.Location;
+                newLocation.X += e.X - Offset.X;
+                newLocation.Y += e.Y - Offset.Y;
+                this.Location = newLocation;
+            }
+        }
+
+        private void VideoPlayControl_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (Moving) Moving = false;
+        }
+
         #endregion
+
     }
 }

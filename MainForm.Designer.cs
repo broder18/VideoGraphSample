@@ -56,7 +56,6 @@ namespace VideoGraphSample
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.menuItemFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemOptions = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemEditPids = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuItemExit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemVideo = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,6 +74,9 @@ namespace VideoGraphSample
             this.menuItemTileFit13 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemTileFit14 = new System.Windows.Forms.ToolStripMenuItem();
             this.cascadeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.controlPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showCtrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideCtrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.popupMenu.SuspendLayout();
             this.mainMenu.SuspendLayout();
             this.SuspendLayout();
@@ -261,7 +263,6 @@ namespace VideoGraphSample
             // 
             this.menuItemFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemOptions,
-            this.menuItemEditPids,
             this.toolStripSeparator1,
             this.menuItemExit});
             this.menuItemFile.Name = "menuItemFile";
@@ -271,25 +272,19 @@ namespace VideoGraphSample
             // menuItemOptions
             // 
             this.menuItemOptions.Name = "menuItemOptions";
-            this.menuItemOptions.Size = new System.Drawing.Size(120, 22);
+            this.menuItemOptions.Size = new System.Drawing.Size(180, 22);
             this.menuItemOptions.Text = "Options";
             this.menuItemOptions.Click += new System.EventHandler(this.menuItemOptions_Click);
-            // 
-            // menuItemEditPids
-            // 
-            this.menuItemEditPids.Name = "menuItemEditPids";
-            this.menuItemEditPids.Size = new System.Drawing.Size(120, 22);
-            this.menuItemEditPids.Text = "Edit PIDs";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(117, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // menuItemExit
             // 
             this.menuItemExit.Name = "menuItemExit";
-            this.menuItemExit.Size = new System.Drawing.Size(120, 22);
+            this.menuItemExit.Size = new System.Drawing.Size(180, 22);
             this.menuItemExit.Text = "Exit";
             this.menuItemExit.Click += new System.EventHandler(this.menuItemExit_Click);
             // 
@@ -298,7 +293,8 @@ namespace VideoGraphSample
             this.menuItemVideo.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemSize,
             this.tileToolStripMenuItem,
-            this.cascadeToolStripMenuItem});
+            this.cascadeToolStripMenuItem,
+            this.controlPanelToolStripMenuItem});
             this.menuItemVideo.Name = "menuItemVideo";
             this.menuItemVideo.Size = new System.Drawing.Size(49, 20);
             this.menuItemVideo.Text = "Video";
@@ -314,13 +310,13 @@ namespace VideoGraphSample
             this.menuItemToLargest,
             this.menuItemToSmallest});
             this.menuItemSize.Name = "menuItemSize";
-            this.menuItemSize.Size = new System.Drawing.Size(118, 22);
+            this.menuItemSize.Size = new System.Drawing.Size(180, 22);
             this.menuItemSize.Text = "Size";
             // 
             // menuItem11
             // 
             this.menuItem11.Name = "menuItem11";
-            this.menuItem11.Size = new System.Drawing.Size(133, 22);
+            this.menuItem11.Size = new System.Drawing.Size(180, 22);
             this.menuItem11.Tag = "1";
             this.menuItem11.Text = "1:1";
             this.menuItem11.Click += new System.EventHandler(this.menuItemSetScale_Click);
@@ -328,7 +324,7 @@ namespace VideoGraphSample
             // menuItem12
             // 
             this.menuItem12.Name = "menuItem12";
-            this.menuItem12.Size = new System.Drawing.Size(133, 22);
+            this.menuItem12.Size = new System.Drawing.Size(180, 22);
             this.menuItem12.Tag = "2";
             this.menuItem12.Text = "1:2";
             this.menuItem12.Click += new System.EventHandler(this.menuItemSetScale_Click);
@@ -336,7 +332,7 @@ namespace VideoGraphSample
             // menuItem13
             // 
             this.menuItem13.Name = "menuItem13";
-            this.menuItem13.Size = new System.Drawing.Size(133, 22);
+            this.menuItem13.Size = new System.Drawing.Size(180, 22);
             this.menuItem13.Tag = "3";
             this.menuItem13.Text = "1:3";
             this.menuItem13.Click += new System.EventHandler(this.menuItemSetScale_Click);
@@ -344,7 +340,7 @@ namespace VideoGraphSample
             // menuItem14
             // 
             this.menuItem14.Name = "menuItem14";
-            this.menuItem14.Size = new System.Drawing.Size(133, 22);
+            this.menuItem14.Size = new System.Drawing.Size(180, 22);
             this.menuItem14.Tag = "4";
             this.menuItem14.Text = "1:4";
             this.menuItem14.Click += new System.EventHandler(this.menuItemSetScale_Click);
@@ -352,19 +348,19 @@ namespace VideoGraphSample
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(130, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
             // menuItemToLargest
             // 
             this.menuItemToLargest.Name = "menuItemToLargest";
-            this.menuItemToLargest.Size = new System.Drawing.Size(133, 22);
+            this.menuItemToLargest.Size = new System.Drawing.Size(180, 22);
             this.menuItemToLargest.Text = "To Largest";
             this.menuItemToLargest.Click += new System.EventHandler(this.menuItemToLargest_Click);
             // 
             // menuItemToSmallest
             // 
             this.menuItemToSmallest.Name = "menuItemToSmallest";
-            this.menuItemToSmallest.Size = new System.Drawing.Size(133, 22);
+            this.menuItemToSmallest.Size = new System.Drawing.Size(180, 22);
             this.menuItemToSmallest.Text = "To Smallest";
             this.menuItemToSmallest.Click += new System.EventHandler(this.menuItemToSmallest_Click);
             // 
@@ -377,20 +373,20 @@ namespace VideoGraphSample
             this.menuItemTileFit13,
             this.menuItemTileFit14});
             this.tileToolStripMenuItem.Name = "tileToolStripMenuItem";
-            this.tileToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.tileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.tileToolStripMenuItem.Text = "Tile";
             // 
             // fitToDesktopToolStripMenuItem
             // 
             this.fitToDesktopToolStripMenuItem.Name = "fitToDesktopToolStripMenuItem";
-            this.fitToDesktopToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.fitToDesktopToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.fitToDesktopToolStripMenuItem.Text = "Fit to Desktop";
             this.fitToDesktopToolStripMenuItem.Click += new System.EventHandler(this.menuItemTileFitToDesktop_Click);
             // 
             // menuItemTileFit11
             // 
             this.menuItemTileFit11.Name = "menuItemTileFit11";
-            this.menuItemTileFit11.Size = new System.Drawing.Size(147, 22);
+            this.menuItemTileFit11.Size = new System.Drawing.Size(180, 22);
             this.menuItemTileFit11.Tag = "1";
             this.menuItemTileFit11.Text = "1:1";
             this.menuItemTileFit11.Click += new System.EventHandler(this.menuItemTileFit1X_click);
@@ -398,7 +394,7 @@ namespace VideoGraphSample
             // menuItemTileFit12
             // 
             this.menuItemTileFit12.Name = "menuItemTileFit12";
-            this.menuItemTileFit12.Size = new System.Drawing.Size(147, 22);
+            this.menuItemTileFit12.Size = new System.Drawing.Size(180, 22);
             this.menuItemTileFit12.Tag = "2";
             this.menuItemTileFit12.Text = "1:2";
             this.menuItemTileFit12.Click += new System.EventHandler(this.menuItemTileFit1X_click);
@@ -406,7 +402,7 @@ namespace VideoGraphSample
             // menuItemTileFit13
             // 
             this.menuItemTileFit13.Name = "menuItemTileFit13";
-            this.menuItemTileFit13.Size = new System.Drawing.Size(147, 22);
+            this.menuItemTileFit13.Size = new System.Drawing.Size(180, 22);
             this.menuItemTileFit13.Tag = "3";
             this.menuItemTileFit13.Text = "1:3";
             this.menuItemTileFit13.Click += new System.EventHandler(this.menuItemTileFit1X_click);
@@ -414,7 +410,7 @@ namespace VideoGraphSample
             // menuItemTileFit14
             // 
             this.menuItemTileFit14.Name = "menuItemTileFit14";
-            this.menuItemTileFit14.Size = new System.Drawing.Size(147, 22);
+            this.menuItemTileFit14.Size = new System.Drawing.Size(180, 22);
             this.menuItemTileFit14.Tag = "4";
             this.menuItemTileFit14.Text = "1:4";
             this.menuItemTileFit14.Click += new System.EventHandler(this.menuItemTileFit1X_click);
@@ -422,9 +418,33 @@ namespace VideoGraphSample
             // cascadeToolStripMenuItem
             // 
             this.cascadeToolStripMenuItem.Name = "cascadeToolStripMenuItem";
-            this.cascadeToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.cascadeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.cascadeToolStripMenuItem.Text = "Cascade";
             this.cascadeToolStripMenuItem.Click += new System.EventHandler(this.menuItemCascade_Click);
+            // 
+            // controlPanelToolStripMenuItem
+            // 
+            this.controlPanelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showCtrlToolStripMenuItem,
+            this.hideCtrlToolStripMenuItem});
+            this.controlPanelToolStripMenuItem.Name = "controlPanelToolStripMenuItem";
+            this.controlPanelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.controlPanelToolStripMenuItem.Text = "ControlPanel";
+            this.controlPanelToolStripMenuItem.Visible = false;
+            // 
+            // showCtrlToolStripMenuItem
+            // 
+            this.showCtrlToolStripMenuItem.Name = "showCtrlToolStripMenuItem";
+            this.showCtrlToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showCtrlToolStripMenuItem.Text = "Show";
+            this.showCtrlToolStripMenuItem.Click += new System.EventHandler(this.showCtrlToolStripMenuItem_Click);
+            // 
+            // hideCtrlToolStripMenuItem
+            // 
+            this.hideCtrlToolStripMenuItem.Name = "hideCtrlToolStripMenuItem";
+            this.hideCtrlToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hideCtrlToolStripMenuItem.Text = "Hide";
+            this.hideCtrlToolStripMenuItem.Click += new System.EventHandler(this.hideCtrlToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -456,7 +476,6 @@ namespace VideoGraphSample
         private System.Windows.Forms.MenuStrip mainMenu;
         private System.Windows.Forms.ToolStripMenuItem menuItemFile;
         private System.Windows.Forms.ToolStripMenuItem menuItemOptions;
-        private System.Windows.Forms.ToolStripMenuItem menuItemEditPids;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem menuItemExit;
         private System.Windows.Forms.ToolStripMenuItem menuItemVideo;
@@ -492,6 +511,9 @@ namespace VideoGraphSample
         private System.Windows.Forms.ToolStripMenuItem menuItemEnableDisable;
         private System.Windows.Forms.ToolStripMenuItem menuItemDisableAllButThis;
         private System.Windows.Forms.ToolStripMenuItem menuItemHideAllButThis;
+        private System.Windows.Forms.ToolStripMenuItem controlPanelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showCtrlToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hideCtrlToolStripMenuItem;
     }
 }
 

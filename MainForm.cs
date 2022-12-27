@@ -81,20 +81,20 @@ namespace VideoGraphSample
             }
         }
 
+        private void ClearAuxiliary()
+        {
+            TurnOffTimerUpdate();
+            HideVideoControlPanel();
+            _mapPids?.Clear();
+            CloseWndRender();
+            Dll.Close();
+        }
 
         private void Start(string filePath)
         {
             
-            if (Dll._dllOpened)
-            {
-                TurnOffTimerUpdate();
-                _controlVideoPanel.Hide();
-                NativeMethods.HideNA(_controlVideoPanel);
-                _mapPids?.Clear();
-                CloseWndRender();
-                Dll.Close();
-            }
-            
+            if (Dll._dllOpened) ClearAuxiliary();
+
             CreateMap();
             ScanBytes.SearchSyncByte(filePath, ref _mapPids);
             CreateListItems();
@@ -102,21 +102,45 @@ namespace VideoGraphSample
             Dll.Open(filePath, GetChannels());
             Dll.SetStart();
             TurnOnTimerUpdate();
-            NativeMethods.ShowNA(_controlVideoPanel);
-            _controlVideoPanel.Visible = true;
-            
+            ShowVideoControlPanel();
+            controlPanelToolStripMenuItem.Visible = true;
+            SetupControlPanelSettings(false);
+
         }
 
-        /*private void Stop()
+        #region VideoControl panel
+
+        private void ShowVideoControlPanel()
         {
-            if (!Dll._dllOpened) return;
+            NativeMethods.ShowNA(_controlVideoPanel);
+            _controlVideoPanel.Visible = true;
+        }
 
+        private void HideVideoControlPanel()
+        {
+            _controlVideoPanel.Hide();
+            NativeMethods.HideNA(_controlVideoPanel);
+        }
 
-            _mapPids?.Clear();
-            CloseWndRender();
-            Dll.Close();
+        private void showCtrlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetupControlPanelSettings(false);
+            ShowVideoControlPanel();
+        }
 
-        }*/
+        private void hideCtrlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetupControlPanelSettings(true);
+            HideVideoControlPanel();
+        }
+
+        private void SetupControlPanelSettings(bool value)
+        {
+            showCtrlToolStripMenuItem.Enabled = value;
+            hideCtrlToolStripMenuItem.Enabled = !value;
+        }
+
+        #endregion
 
         #region Timer function
 
@@ -691,6 +715,8 @@ namespace VideoGraphSample
             AllSettings.Save();
             
         }
+
+
 
 
         #endregion

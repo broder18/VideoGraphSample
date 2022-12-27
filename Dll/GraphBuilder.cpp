@@ -251,17 +251,17 @@ void GRAPH_CONTROL::MapUnmap(const int ch, const bool map)
 
 void GRAPH_CONTROL::GetPositions(DWORD* percent)
 {
-    LONGLONG start_position, stop_position;
-    CHECK_HR(pIMediaSeeking->GetPositions(&start_position, &stop_position), "IMediaSeeking::GetPosition() failed");
-    *percent = static_cast<DWORD>(start_position * 100 / stop_position);
+    LONGLONG current_position, stop_position;
+    CHECK_HR(pIMediaSeeking->GetPositions(&current_position, &stop_position), "IMediaSeeking::GetPosition() failed");
+    *percent = static_cast<DWORD>(current_position * 100 / stop_position);
 }
 
 void GRAPH_CONTROL::SetPosition(const DWORD percent)
 {
-    LONGLONG current_position = 0, stop_position = 0;
-    CHECK_HR(pIMediaSeeking->GetPositions(&current_position, &stop_position), "ITSFileSource::GetPosition() failed");
+    LONGLONG current_position, stop_position;
+    CHECK_HR(pIMediaSeeking->GetPositions(&current_position, &stop_position), "IMediaSeeking::GetPosition() failed");
     current_position = stop_position / 100 * percent;
-    CHECK_HR(pIMediaSeeking->SetPositions(&current_position, AM_SEEKING_AbsolutePositioning, &stop_position, AM_SEEKING_AbsolutePositioning), "ITSFileSource::SetPosition() failed");
+    CHECK_HR(pIMediaSeeking->SetPositions(&current_position, AM_SEEKING_AbsolutePositioning, &stop_position, AM_SEEKING_AbsolutePositioning), "IMediaSeeking::SetPosition() failed");
 }
 
 void GRAPH_CONTROL::SetStart()

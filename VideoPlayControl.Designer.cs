@@ -65,12 +65,14 @@ namespace VideoGraphSample
             this.ClientSize = new System.Drawing.Size(645, 50);
             this.Controls.Add(this.trackBar_Player);
             this.Controls.Add(this.btn_Play);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "VideoPlayControl";
-            this.Text = "VideoPlay";
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.VideoPlayControl_MouseDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.VideoPlayControl_MouseMove);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.VideoPlayControl_MouseUp);
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_Player)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
