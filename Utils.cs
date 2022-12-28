@@ -24,7 +24,7 @@ namespace VideoGraphSample
             /* find all forms that are below the first one */
             while (hwnds.Count != 0)
             {
-                curhwnd = NativeMethods.GetWindow(curhwnd, NativeMethods.GW_HWNDNEXT);
+                curhwnd = NativeMethods.GetWindow(curhwnd, NativeMethods.GwHwndnext);
                 if (curhwnd == IntPtr.Zero) break;
 
                 /* is the window we have just found one of our windows? */
@@ -44,7 +44,7 @@ namespace VideoGraphSample
             /* find all forms that are above the the first one */
             while (hwnds.Count != 0)
             {
-                curhwnd = NativeMethods.GetWindow(curhwnd, NativeMethods.GW_HWNDPREV);
+                curhwnd = NativeMethods.GetWindow(curhwnd, NativeMethods.GwHwndprev);
                 if (curhwnd == IntPtr.Zero) break;
 
                 /* is the window we have just found one of our windows? */

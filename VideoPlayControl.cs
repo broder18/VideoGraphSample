@@ -7,8 +7,8 @@ namespace VideoGraphSample
     public partial class VideoPlayControl : Form
     {
         public bool Paused { get; private set; }
-        private bool Moving = false;
-        private Point Offset;
+        private bool _moving;
+        private Point _offset;
         
         public VideoPlayControl()
         {
@@ -23,12 +23,7 @@ namespace VideoGraphSample
             Dll.GetPositionTrackBar(ref percent);
             
             trackBar_Player.Value = percent;
-            Console.WriteLine(percent);
-            if (percent == 100) btn_Play.Enabled = false;
-            else
-            {
-                btn_Play.Enabled = true;
-            }
+            btn_Play.Enabled = percent != 100;
         }
 
         private void Set_trackBar_Position()
@@ -55,7 +50,7 @@ namespace VideoGraphSample
 
         private void SetStart()
         {
-            if (!Dll._dllOpened) return;
+            if (!Dll.DllOpened) return;
             if (!Paused) Dll.SetStart();
             else
                 Dll.SetPause();
@@ -72,27 +67,26 @@ namespace VideoGraphSample
 
         private void VideoPlayControl_MouseDown(object sender, MouseEventArgs e)
         {
-            Moving = true;
-            Offset = new Point(e.X, e.Y);
+            _moving = true;
+            _offset = new Point(e.X, e.Y);
         }
 
         private void VideoPlayControl_MouseMove(object sender, MouseEventArgs e)
         {
-            if (Moving)
+            if (_moving)
             {
                 Point newLocation = this.Location;
-                newLocation.X += e.X - Offset.X;
-                newLocation.Y += e.Y - Offset.Y;
+                newLocation.X += e.X - _offset.X;
+                newLocation.Y += e.Y - _offset.Y;
                 this.Location = newLocation;
             }
         }
 
         private void VideoPlayControl_MouseUp(object sender, MouseEventArgs e)
         {
-            if (Moving) Moving = false;
+            if (_moving) _moving = false;
         }
 
         #endregion
-
     }
 }

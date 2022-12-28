@@ -43,7 +43,7 @@ namespace VideoGraphSample
             this.trackBar_Player.Location = new System.Drawing.Point(54, 12);
             this.trackBar_Player.Maximum = 100;
             this.trackBar_Player.Name = "trackBar_Player";
-            this.trackBar_Player.Size = new System.Drawing.Size(592, 45);
+            this.trackBar_Player.Size = new System.Drawing.Size(416, 45);
             this.trackBar_Player.TabIndex = 1;
             this.trackBar_Player.MouseDown += new System.Windows.Forms.MouseEventHandler(this.trackBar_Player_MouseDown);
             this.trackBar_Player.MouseUp += new System.Windows.Forms.MouseEventHandler(this.trackBar_Player_MouseUp);
@@ -62,7 +62,7 @@ namespace VideoGraphSample
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(645, 50);
+            this.ClientSize = new System.Drawing.Size(469, 50);
             this.Controls.Add(this.trackBar_Player);
             this.Controls.Add(this.btn_Play);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;

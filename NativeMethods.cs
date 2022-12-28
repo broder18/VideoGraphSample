@@ -35,89 +35,89 @@ namespace VideoGraphSample
         private const int SWP_DEFERERASE = 0x2000;
         private const int SWP_ASYNCWINDOWPOS = 0x4000;
 
-        public const int WM_SIZING = 0x214;
-        public const int WM_MOVING = 0x216;
-        public const int WM_ERASEBKGND = 0x14;
+        public const int WmSizing = 0x214;
+        public const int WmMoving = 0x216;
+        public const int WmErasebkgnd = 0x14;
 
-        public const int WMSZ_LEFT = 1;
-        public const int WMSZ_RIGHT = 2;
-        public const int WMSZ_TOP = 3;
-        public const int WMSZ_TOPLEFT = 4;
-        public const int WMSZ_TOPRIGHT = 5;
-        public const int WMSZ_BOTTOM = 6;
-        public const int WMSZ_BOTTOMLEFT = 7;
-        public const int WMSZ_BOTTOMRIGHT = 8;
+        public const int WmszLeft = 1;
+        public const int WmszRight = 2;
+        public const int WmszTop = 3;
+        public const int WmszTopleft = 4;
+        public const int WmszTopright = 5;
+        public const int WmszBottom = 6;
+        public const int WmszBottomleft = 7;
+        public const int WmszBottomright = 8;
 
-        public const int WM_LBUTTONDBLCLK = 0x203;
+        public const int WmLbuttondblclk = 0x203;
 
         /* class styles */
-        public const int CS_VREDRAW = 0x0001;
-        public const int CS_HREDRAW = 0x0002;
-        public const int CS_DBLCLKS = 0x0008;
-        public const int CS_OWNDC = 0x0020;
-        public const int CS_CLASSDC = 0x0040;
-        public const int CS_PARENTDC = 0x0080;
-        public const int CS_NOCLOSE = 0x0200;
-        public const int CS_SAVEBITS = 0x0800;
-        public const int CS_BYTEALIGNCLIENT = 0x1000;
-        public const int CS_BYTEALIGNWINDOW = 0x2000;
-        public const int CS_GLOBALCLASS = 0x4000;
-        public const int CS_IME = 0x00010000;
-        public const int CS_DROPSHADOW = 0x00020000;
+        public const int CsVredraw = 0x0001;
+        public const int CsHredraw = 0x0002;
+        public const int CsDblclks = 0x0008;
+        public const int CsOwndc = 0x0020;
+        public const int CsClassdc = 0x0040;
+        public const int CsParentdc = 0x0080;
+        public const int CsNoclose = 0x0200;
+        public const int CsSavebits = 0x0800;
+        public const int CsBytealignclient = 0x1000;
+        public const int CsBytealignwindow = 0x2000;
+        public const int CsGlobalclass = 0x4000;
+        public const int CsIme = 0x00010000;
+        public const int CsDropshadow = 0x00020000;
 
         /* window styles */
-        public const int WS_OVERLAPPED = 0x00000000;
-        public const int WS_POPUP = unchecked((int)0x80000000);
-        public const int WS_CHILD = 0x40000000;
-        public const int WS_MINIMIZE = 0x20000000;
-        public const int WS_VISIBLE = 0x10000000;
-        public const int WS_DISABLED = 0x08000000;
-        public const int WS_CLIPSIBLINGS = 0x04000000;
-        public const int WS_CLIPCHILDREN = 0x02000000;
-        public const int WS_MAXIMIZE = 0x01000000;
-        public const int WS_CAPTION = 0x00C00000;
-        public const int WS_BORDER = 0x00800000;
-        public const int WS_DLGFRAME = 0x00400000;
-        public const int WS_VSCROLL = 0x00200000;
-        public const int WS_HSCROLL = 0x00100000;
-        public const int WS_SYSMENU = 0x00080000;
-        public const int WS_THICKFRAME = 0x00040000;
-        public const int WS_GROUP = 0x00020000;
-        public const int WS_MINIMIZEBOX = 0x00020000;
-        public const int WS_TABSTOP = 0x00010000;
-        public const int WS_MAXIMIZEBOX = 0x00010000;
+        public const int WsOverlapped = 0x00000000;
+        public const int WsPopup = unchecked((int)0x80000000);
+        public const int WsChild = 0x40000000;
+        public const int WsMinimize = 0x20000000;
+        public const int WsVisible = 0x10000000;
+        public const int WsDisabled = 0x08000000;
+        public const int WsClipsiblings = 0x04000000;
+        public const int WsClipchildren = 0x02000000;
+        public const int WsMaximize = 0x01000000;
+        public const int WsCaption = 0x00C00000;
+        public const int WsBorder = 0x00800000;
+        public const int WsDlgframe = 0x00400000;
+        public const int WsVscroll = 0x00200000;
+        public const int WsHscroll = 0x00100000;
+        public const int WsSysmenu = 0x00080000;
+        public const int WsThickframe = 0x00040000;
+        public const int WsGroup = 0x00020000;
+        public const int WsMinimizebox = 0x00020000;
+        public const int WsTabstop = 0x00010000;
+        public const int WsMaximizebox = 0x00010000;
 
         /* extended window styles */
-        public const int WS_EX_LEFT = 0x00000000;
-        public const int WS_EX_LTRREADING = 0x00000000;
-        public const int WS_EX_RIGHTSCROLLBAR = 0x00000000;
-        public const int WS_EX_DLGMODALFRAME = 0x00000001;
-        public const int WS_EX_NOPARENTNOTIFY = 0x00000004;
-        public const int WS_EX_TOPMOST = 0x00000008;
-        public const int WS_EX_ACCEPTFILES = 0x00000010;
-        public const int WS_EX_TRANSPARENT = 0x00000020;
-        public const int WS_EX_MDICHILD = 0x00000040;
-        public const int WS_EX_TOOLWINDOW = 0x00000080;
-        public const int WS_EX_WINDOWEDGE = 0x00000100;
-        public const int WS_EX_CLIENTEDGE = 0x00000200;
-        public const int WS_EX_CONTEXTHELP = 0x00000400;
-        public const int WS_EX_RIGHT = 0x00001000;
-        public const int WS_EX_RTLREADING = 0x00002000;
-        public const int WS_EX_LEFTSCROLLBAR = 0x00004000;
-        public const int WS_EX_CONTROLPARENT = 0x00010000;
-        public const int WS_EX_STATICEDGE = 0x00020000;
-        public const int WS_EX_APPWINDOW = 0x00040000;
-        public const int WS_EX_LAYERED = 0x00080000;
-        public const int WS_EX_NOINHERITLAYOUT = 0x00100000;
-        public const int WS_EX_LAYOUTRTL = 0x00400000;
-        public const int WS_EX_COMPOSITED = 0x02000000;
-        public const int WS_EX_NOACTIVATE = 0x08000000;
+        public const int WsExLeft = 0x00000000;
+        public const int WsExLtrreading = 0x00000000;
+        public const int WsExRightscrollbar = 0x00000000;
+        public const int WsExDlgmodalframe = 0x00000001;
+        public const int WsExNoparentnotify = 0x00000004;
+        public const int WsExTopmost = 0x00000008;
+        public const int WsExAcceptfiles = 0x00000010;
+        public const int WsExTransparent = 0x00000020;
+        public const int WsExMdichild = 0x00000040;
+        public const int WsExToolwindow = 0x00000080;
+        public const int WsExWindowedge = 0x00000100;
+        public const int WsExClientedge = 0x00000200;
+        public const int WsExContexthelp = 0x00000400;
+        public const int WsExRight = 0x00001000;
+        public const int WsExRtlreading = 0x00002000;
+        public const int WsExLeftscrollbar = 0x00004000;
+        public const int WsExControlparent = 0x00010000;
+        public const int WsExStaticedge = 0x00020000;
+        public const int WsExAppwindow = 0x00040000;
+        public const int WsExLayered = 0x00080000;
+        public const int WsExNoinheritlayout = 0x00100000;
+        public const int WsExLayoutrtl = 0x00400000;
+        public const int WsExComposited = 0x02000000;
+        public const int WsExNoactivate = 0x08000000;
 
-        public const int RGN_AND = 1;
-        public const int RGN_OR = 2;
-        public const int RGN_XOR = 3;
-        public const int RGN_DIFF = 4;
-        public const int RGN_COPY = 5;
+        public const int RgnAnd = 1;
+        public const int RgnOr = 2;
+        public const int RgnXor = 3;
+        public const int RgnDiff = 4;
+        public const int RgnCopy = 5;
 
         private const int VK_SHIFT = 0x10;
         private const int VK_CONTROL = 0x11;
@@ -125,15 +125,15 @@ namespace VideoGraphSample
         private const int VK_LWIN = 0x5b;
         private const int VK_RWIN = 0x5c;
 
-        public const uint GW_HWNDNEXT = 2;      // get the handle of the window below the given window.
-        public const uint GW_HWNDPREV = 3;      //
+        public const uint GwHwndnext = 2;      // get the handle of the window below the given window.
+        public const uint GwHwndprev = 3;      //
 
         #endregion
 
         #region Structures
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
+        public struct Rect
         {
             public readonly int Left;
             public int Top;
@@ -171,7 +171,7 @@ namespace VideoGraphSample
         private static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wp, int lp);
 
         [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy,
+        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy,
             uint uFlags);
 
         [DllImport("user32.dll")]
@@ -217,29 +217,29 @@ namespace VideoGraphSample
         }
 
         /* show a form/window without activating it */
-        public static void ShowNA(IntPtr hwnd)
+        public static void ShowNa(IntPtr hwnd)
         {
             SetWindowPos(hwnd, IntPtr.Zero, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
         }
 
-        public static void ShowNA(Form frm)
+        public static void ShowNa(Form frm)
         {
-            ShowNA(frm.Handle);
+            ShowNa(frm.Handle);
         }
 
-        public static void ShowAtNA(Form frm, int x, int y)
+        public static void ShowAtNa(Form frm, int x, int y)
         {
             SetWindowPos(frm.Handle, (IntPtr)HWND_TOP, x, y, 0, 0, SWP_SHOWWINDOW | SWP_NOACTIVATE | SWP_NOSIZE);
         }
 
-        public static void HideNA(IntPtr hwnd)
+        public static void HideNa(IntPtr hwnd)
         {
             SetWindowPos(hwnd, IntPtr.Zero, 0, 0, 0, 0, SWP_HIDEWINDOW | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
         }
 
-        public static void HideNA(Form frm)
+        public static void HideNa(Form frm)
         {
-            HideNA(frm.Handle);
+            HideNa(frm.Handle);
         }
 
         public static bool IsShiftPressed()

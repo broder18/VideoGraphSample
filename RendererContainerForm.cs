@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -9,7 +8,7 @@ namespace VideoGraphSample
 {
     public sealed partial class RendererContainerForm : Form
     {
-        public VideoPlayControl _videoPlayControl;
+        public VideoPlayControl VideoPlayControl;
 
         private const int VideoW = Defines.VideoW;
         private const int VideoH = Defines.VideoH;
@@ -97,33 +96,11 @@ namespace VideoGraphSample
             set => base.Text = value;
         }
 
-        /*private void click_MouseDown(object sender, EventArgs e)
-        {
-            TrackBarEnabled = true;
-            Dll.SetStop();
-        }
-
-        private void click_MouseUp(object sender, EventArgs e)
-        {
-            if (TrackBarEnabled)
-            {
-                Dll.SetStart();
-                //Dll.SetPositionTrackBar((ushort) trackBar_Player.Value);
-                TrackBarEnabled = false;
-            }
-        }*/
-
-        public IntPtr GetPictureBoxHandle()
-        {
-            
-            return this.Handle;
-        }
-
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
             {
-                case NativeMethods.WM_SIZING:
+                case NativeMethods.WmSizing:
                     WmSizing(m.WParam.ToInt32(), m.LParam);
                     m.Result = (IntPtr) 1;
                     return;
@@ -134,30 +111,30 @@ namespace VideoGraphSample
 
         private void WmSizing(int fwSide, IntPtr lParam)
         {
-            var rc = (NativeMethods.RECT) Marshal.PtrToStructure(lParam, typeof(NativeMethods.RECT));
+            var rc = (NativeMethods.Rect) Marshal.PtrToStructure(lParam, typeof(NativeMethods.Rect));
 
             if (rc.Width < Defines.MinWindowW) rc.Width = Defines.MinWindowW;
             if (rc.Height < Defines.MinWindowH) rc.Height = Defines.MinWindowH;
 
             switch (fwSide)
             {
-                case NativeMethods.WMSZ_LEFT:
-                case NativeMethods.WMSZ_RIGHT:
+                case NativeMethods.WmszLeft:
+                case NativeMethods.WmszRight:
                     rc.Bottom = rc.Top + CalcNewHeight(rc);
                     break;
 
-                case NativeMethods.WMSZ_TOP:
-                case NativeMethods.WMSZ_BOTTOM:
+                case NativeMethods.WmszTop:
+                case NativeMethods.WmszBottom:
                     rc.Right = rc.Left + CalcNewWidth(rc);
                     break;
 
-                case NativeMethods.WMSZ_TOPLEFT:
-                case NativeMethods.WMSZ_TOPRIGHT:
+                case NativeMethods.WmszTopleft:
+                case NativeMethods.WmszTopright:
                     rc.Top = rc.Bottom - CalcNewHeight(rc);
                     break;
 
-                case NativeMethods.WMSZ_BOTTOMLEFT:
-                case NativeMethods.WMSZ_BOTTOMRIGHT:
+                case NativeMethods.WmszBottomleft:
+                case NativeMethods.WmszBottomright:
                     rc.Bottom = rc.Top + CalcNewHeight(rc);
                     break;
             }
@@ -165,14 +142,14 @@ namespace VideoGraphSample
             Marshal.StructureToPtr(rc, lParam, true);
         }
 
-        private int CalcNewHeight(NativeMethods.RECT rc)
+        private int CalcNewHeight(NativeMethods.Rect rc)
         {
             int imageW = rc.Width - _clientDeltaX - BordersWidth;
             int imageH = Convert.ToInt32(imageW / AspectRatio);
             return imageH + _clientDeltaY + BordersHeight;
         }
 
-        private int CalcNewWidth(NativeMethods.RECT rc)
+        private int CalcNewWidth(NativeMethods.Rect rc)
         {
             int imageH = rc.Height - _clientDeltaY - BordersHeight;
             int imageW = Convert.ToInt32(imageH * AspectRatio);

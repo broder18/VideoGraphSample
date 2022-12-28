@@ -128,7 +128,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="PlayPause3.jpg" />
-    <None Include="PlayPause2.png" />
     <Content Include="rat.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

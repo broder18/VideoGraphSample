@@ -34,6 +34,7 @@ namespace VideoGraphSample
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RendererContainerForm));
             this.rendererContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuItemSize11 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSize12 = new System.Windows.Forms.ToolStripMenuItem();
@@ -106,6 +107,7 @@ namespace VideoGraphSample
             // 
             this.ClientSize = new System.Drawing.Size(384, 361);
             this.ContextMenuStrip = this.rendererContextMenu;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(240, 240);
             this.Name = "RendererContainerForm";
             this.Activated += new System.EventHandler(this.RendererContainerForm_Activated);

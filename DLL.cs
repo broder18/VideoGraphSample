@@ -1,15 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Collections.Generic;
-
 
 namespace VideoGraphSample
 {
     public static class Dll
     {
         private static bool _dllInitialized;
-        public static bool _dllOpened;
+        public static bool DllOpened;
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
         public unsafe struct AllChannels
@@ -118,37 +115,37 @@ namespace VideoGraphSample
             settings.Channels = channels;
 
             if (!NativeMethods.bvpOpen(ref settings, path)) throw new Exception("bvpOpen() failed: " + GetLastError());
-            _dllOpened = true;
+            DllOpened = true;
 
         }
 
         public static void Close()
         {
             NativeMethods.bvpClose();
-            _dllOpened = false;
+            DllOpened = false;
         }
 
         public static void Resize(IntPtr hwnd)
         {
-            if (!_dllOpened) return; 
+            if (!DllOpened) return; 
             if (!NativeMethods.bvpResizeRenderer(hwnd)) throw new Exception("bvpResizeRenderer() failed: " + GetLastError());
         }
 
         public static void UpdateTelemetryPosition()
         {
-            if (!_dllOpened) return;
+            if (!DllOpened) return;
             NativeMethods.bvpSetTelemetryPosition(AllSettings.TelemetryPosX, AllSettings.TelemetryPosY);
         }
 
         public static void UpdateTelemetryAlpha()
         {
-            if (!_dllOpened) return;
+            if (!DllOpened) return;
             NativeMethods.bvpSetTelemetryAlpha(AllSettings.TelemetryAlpha);
         }
 
         public static void UpdateTelemetryColors()
         {
-            if (!_dllOpened) return;
+            if (!DllOpened) return;
             NativeMethods.bvpSetTelemetryColors(AllSettings.TelemetryTxtColor, AllSettings.TelemetryBkgColor);
         }
 

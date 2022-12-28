@@ -63,16 +63,6 @@ namespace VideoGraphSample.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap PlayPause2 {
-            get {
-                object obj = ResourceManager.GetObject("PlayPause2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap PlayPause3 {
             get {
                 object obj = ResourceManager.GetObject("PlayPause3", resourceCulture);

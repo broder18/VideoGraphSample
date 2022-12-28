@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace VideoGraphSample
 {
@@ -33,7 +25,7 @@ namespace VideoGraphSample
             int x = r.Left + (r.Width - Width) / 2;
             int y = r.Top + (r.Height - Height) / 2;
 
-            NativeMethods.ShowAtNA(this, x, y + 20);
+            NativeMethods.ShowAtNa(this, x, y + 20);
             Visible = true;
         }
 
