@@ -38,15 +38,7 @@ namespace VideoGraphSample
             }
         }
 
-        private void CreateListItems()
-        {
-            StatisticsList.Items.Clear(); 
 
-            foreach (var item in _mapPids.Where(item => item.Value))
-            {
-                StatisticsList.Items.Add($"0x{item.Key:X4}");
-            }
-        }
 
         private Dll.AllChannels GetChannels()
         {
@@ -74,10 +66,29 @@ namespace VideoGraphSample
             }
         }
 
+        #region Setup func
+
+        private void UpdateTelemetry()
+        {
+            Dll.UpdateTelemetryPosition();
+            Dll.UpdateTelemetryAlpha();
+            Dll.UpdateTelemetryColors();
+        }
+
+        private void CreateListItems()
+        {
+            StatisticsList.Items.Clear();
+
+            foreach (var item in _mapPids.Where(item => item.Value))
+            {
+                StatisticsList.Items.Add($"0x{item.Key:X4}");
+            }
+        }
+
         private void ClearAuxiliary()
         {
-            TurnOffTimerUpdate();
-            HideVideoControlPanel();
+            TurnOff_TimerUpdate();
+            Hide_VideoControlPanel();
             _mapPids?.Clear();
             RemoveRendererEvent();
             CloseWndRender();
@@ -93,16 +104,25 @@ namespace VideoGraphSample
             CreateListItems();
             CreateWndRender();
             Dll.Open(filePath, GetChannels());
+            UpdateTelemetry();
             Dll.SetStart();
-            TurnOnTimerUpdate();
-            ShowVideoControlPanel();
-            controlPanelToolStripMenuItem.Visible = true;
-            SetupControlPanelSettings(false);
+            TurnOn_TimerUpdate();
+            Setup_VideoControlStart();
         }
+
+        #endregion
 
         #region VideoControl panel
 
-        private void ShowVideoControlPanel()
+        private void Setup_VideoControlStart()
+        {
+            _controlVideoPanel.SetDefault();
+            Show_VideoControlPanel();
+            controlPanelToolStripMenuItem.Visible = true;
+            Setup_ControlPanelSettings(false);
+        }
+
+        private void Show_VideoControlPanel()
         {
             NativeMethods.ShowNa(_controlVideoPanel);
             var newLocation = new Point(Location.X + 8, Location.Y + Height);
@@ -110,7 +130,7 @@ namespace VideoGraphSample
             _controlVideoPanel.Visible = true;
         }
 
-        private void HideVideoControlPanel()
+        private void Hide_VideoControlPanel()
         {
             _controlVideoPanel.Hide();
             NativeMethods.HideNa(_controlVideoPanel);
@@ -118,17 +138,17 @@ namespace VideoGraphSample
 
         private void showCtrlToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetupControlPanelSettings(false);
-            ShowVideoControlPanel();
+            Setup_ControlPanelSettings(false);
+            Show_VideoControlPanel();
         }
 
         private void hideCtrlToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetupControlPanelSettings(true);
-            HideVideoControlPanel();
+            Setup_ControlPanelSettings(true);
+            Hide_VideoControlPanel();
         }
 
-        private void SetupControlPanelSettings(bool value)
+        private void Setup_ControlPanelSettings(bool value)
         {
             showCtrlToolStripMenuItem.Enabled = value;
             hideCtrlToolStripMenuItem.Enabled = !value;
@@ -138,13 +158,13 @@ namespace VideoGraphSample
 
         #region Timer function
 
-        public void TurnOnTimerUpdate()
+        public void TurnOn_TimerUpdate()
         {
             if (timer_updateTrackBar.Enabled) return;
             timer_updateTrackBar.Start();
         }
 
-        public void TurnOffTimerUpdate()
+        public void TurnOff_TimerUpdate()
         {
             if (!timer_updateTrackBar.Enabled) return;
             timer_updateTrackBar.Stop();
@@ -712,7 +732,7 @@ namespace VideoGraphSample
         {
             if (Dll.DllOpened)
             {
-                TurnOffTimerUpdate();
+                TurnOff_TimerUpdate();
                 foreach (var rend in _renderers) NativeMethods.HideNa(rend);
             }
             

@@ -48,6 +48,11 @@ namespace VideoGraphSample
         #endregion
         #region Form Control
 
+        public void SetDefault()
+        {
+            Paused = false;
+        }
+
         private void SetStart()
         {
             if (!Dll.DllOpened) return;

@@ -69,7 +69,6 @@ namespace VideoGraphSample
             AllSettings.TelemetryBkgColor = Defines.TelemetryBkgColor;
             AllSettings.TelemetryTxtColor = Defines.TelemetryTxtColor;
 
-
             UpdateTelemetry();
         }
 
