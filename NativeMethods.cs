@@ -3,7 +3,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace VideoGraphSample
+namespace BIONVideoPlayer
 {
     internal static class NativeMethods
     {

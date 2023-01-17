@@ -1,5 +1,5 @@
 ﻿
-namespace VideoGraphSample
+namespace BIONVideoPlayer
 {
     partial class VideoPlayControl
     {
@@ -50,7 +50,7 @@ namespace VideoGraphSample
             // 
             // btn_Play
             // 
-            this.btn_Play.Image = global::VideoGraphSample.Properties.Resources.PlayPause3;
+            this.btn_Play.Image = global::BIONVideoPlayer.Properties.Resources.PlayPause3;
             this.btn_Play.Location = new System.Drawing.Point(3, 3);
             this.btn_Play.Name = "btn_Play";
             this.btn_Play.Size = new System.Drawing.Size(45, 45);

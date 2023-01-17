@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace VideoGraphSample
+namespace BIONVideoPlayer
 {
     public sealed partial class RendererContainerForm : Form
     {
@@ -39,11 +39,6 @@ namespace VideoGraphSample
         public EventHandler OnTelemetryEnableChange { get; set; }
 
         private readonly string _baseTitle;
-
-
-        //private int _oldLen;
-        //private const double Prop = 300 / 400;
-        //public bool TrackBarEnabled { get; private set; }
 
         public RendererContainerForm(string basetitle, bool enableTelemetry)
         {
@@ -154,17 +149,6 @@ namespace VideoGraphSample
             int imageH = rc.Height - _clientDeltaY - BordersHeight;
             int imageW = Convert.ToInt32(imageH * AspectRatio);
             return imageW + _clientDeltaX + BordersWidth;
-        }
-
-        public void SetTrackBarPosition(ushort percent)
-        {
-            //this.trackBar_Player.Value = percent;
-        }
-
-        public ushort GetTrackBarPosition()
-        {
-            //return (ushort) this.trackBar_Player.Value;
-            return 0;
         }
 
         private void DoCreateHandle()

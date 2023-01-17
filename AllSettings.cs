@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 
-namespace VideoGraphSample
+namespace BIONVideoPlayer
 {
     public static class AllSettings
     {
@@ -94,16 +94,17 @@ namespace VideoGraphSample
             return new Rectangle(i * Defines.CascadeOffsetX, i * Defines.CascadeOffsetY, Defines.DefRendererW, Defines.DefRendererH);
         }
 
-        private static string PidsToString(int[] arr, int[] def)
-        {
-            /* writing null string to *.ini file deletes the key */
-            if (arr == null || arr.SequenceEqual(def)) return null;
+//        private static string PidsToString(int[] arr, int[] def)
+//        {
+//            /* writing null string to *.ini file deletes the key */
+//            if (arr == null || arr.SequenceEqual(def)) return null;
+//
+//            var sb = new StringBuilder();
+//            foreach (int value in arr) sb.Append($"{(ushort)value:X04}");
+//            return sb.ToString();
+//        }
 
-            var sb = new StringBuilder();
-            foreach (int value in arr) sb.Append($"{(ushort)value:X04}");
-            return sb.ToString();
-        }
-
+/*
         private static int[] StringToPids(string str, int[] def)
         {
             if (string.IsNullOrEmpty(str) || str.Length % 4 != 0) return def;
@@ -121,6 +122,7 @@ namespace VideoGraphSample
 
             return arr;
         }
+*/
 
     }
 

@@ -1,5 +1,5 @@
 ﻿
-namespace VideoGraphSample
+namespace BIONVideoPlayer
 {
     partial class InfoForm
     {

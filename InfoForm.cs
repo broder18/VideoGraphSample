@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace VideoGraphSample
+namespace BIONVideoPlayer
 {
     public partial class InfoForm : Form
     {

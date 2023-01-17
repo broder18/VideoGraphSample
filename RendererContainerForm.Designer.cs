@@ -1,7 +1,7 @@
 ﻿
 using System.Windows.Forms;
 
-namespace VideoGraphSample
+namespace BIONVideoPlayer
 {
     sealed partial class RendererContainerForm
     {

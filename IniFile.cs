@@ -2,7 +2,7 @@
 using System.Text;
 using System.Windows.Forms;
 
-namespace VideoGraphSample
+namespace BIONVideoPlayer
 {
     public class IniFile
     {

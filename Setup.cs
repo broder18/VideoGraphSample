@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace VideoGraphSample
+namespace BIONVideoPlayer
 {
     public partial class SetupForm : Form
     {
@@ -12,9 +12,9 @@ namespace VideoGraphSample
         private readonly uint _origTelemetryTxtColor = AllSettings.TelemetryTxtColor;
         private readonly uint _origTelemetryBkgColor = AllSettings.TelemetryBkgColor;
 
-        private OpenFileDialog _pathFileDialog;
+        //private OpenFileDialog _pathFileDialog;
 
-        public string FilePath { get; private set;}
+        //public string FilePath => null;
 
         public SetupForm()
         {
@@ -129,7 +129,7 @@ namespace VideoGraphSample
             }
         }
 
-        private void btnPath_Click(object sender, EventArgs e)
+        /*private void btnPath_Click(object sender, EventArgs e)
         {
             CreateFileDialog();
             if (_pathFileDialog.ShowDialog() != DialogResult.OK) return;
@@ -145,6 +145,6 @@ namespace VideoGraphSample
         private void ShowPath()
         {
             pathTextBox.Text = _pathFileDialog.FileName;
-        }
+        }*/
     }
 }

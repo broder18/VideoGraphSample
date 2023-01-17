@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace VideoGraphSample
+namespace BIONVideoPlayer
 {
     partial class MainForm
     {
@@ -56,6 +56,7 @@ namespace VideoGraphSample
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.menuItemFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemOptions = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuItemExit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemVideo = new System.Windows.Forms.ToolStripMenuItem();
@@ -263,6 +264,7 @@ namespace VideoGraphSample
             // 
             this.menuItemFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemOptions,
+            this.menuItemOpen,
             this.toolStripSeparator1,
             this.menuItemExit});
             this.menuItemFile.Name = "menuItemFile";
@@ -272,19 +274,26 @@ namespace VideoGraphSample
             // menuItemOptions
             // 
             this.menuItemOptions.Name = "menuItemOptions";
-            this.menuItemOptions.Size = new System.Drawing.Size(116, 22);
+            this.menuItemOptions.Size = new System.Drawing.Size(180, 22);
             this.menuItemOptions.Text = "Options";
             this.menuItemOptions.Click += new System.EventHandler(this.menuItemOptions_Click);
+            // 
+            // menuItemOpen
+            // 
+            this.menuItemOpen.Name = "menuItemOpen";
+            this.menuItemOpen.Size = new System.Drawing.Size(180, 22);
+            this.menuItemOpen.Text = "Open";
+            this.menuItemOpen.Click += new System.EventHandler(this.menuItemOpen_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(113, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // menuItemExit
             // 
             this.menuItemExit.Name = "menuItemExit";
-            this.menuItemExit.Size = new System.Drawing.Size(116, 22);
+            this.menuItemExit.Size = new System.Drawing.Size(180, 22);
             this.menuItemExit.Text = "Exit";
             this.menuItemExit.Click += new System.EventHandler(this.menuItemExit_Click);
             // 
@@ -310,7 +319,7 @@ namespace VideoGraphSample
             this.menuItemToLargest,
             this.menuItemToSmallest});
             this.menuItemSize.Name = "menuItemSize";
-            this.menuItemSize.Size = new System.Drawing.Size(180, 22);
+            this.menuItemSize.Size = new System.Drawing.Size(143, 22);
             this.menuItemSize.Text = "Size";
             // 
             // menuItem11
@@ -373,7 +382,7 @@ namespace VideoGraphSample
             this.menuItemTileFit13,
             this.menuItemTileFit14});
             this.tileToolStripMenuItem.Name = "tileToolStripMenuItem";
-            this.tileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.tileToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.tileToolStripMenuItem.Text = "Tile";
             // 
             // fitToDesktopToolStripMenuItem
@@ -418,7 +427,7 @@ namespace VideoGraphSample
             // cascadeToolStripMenuItem
             // 
             this.cascadeToolStripMenuItem.Name = "cascadeToolStripMenuItem";
-            this.cascadeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.cascadeToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.cascadeToolStripMenuItem.Text = "Cascade";
             this.cascadeToolStripMenuItem.Click += new System.EventHandler(this.menuItemCascade_Click);
             // 
@@ -428,21 +437,21 @@ namespace VideoGraphSample
             this.showCtrlToolStripMenuItem,
             this.hideCtrlToolStripMenuItem});
             this.controlPanelToolStripMenuItem.Name = "controlPanelToolStripMenuItem";
-            this.controlPanelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.controlPanelToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.controlPanelToolStripMenuItem.Text = "ControlPanel";
             this.controlPanelToolStripMenuItem.Visible = false;
             // 
             // showCtrlToolStripMenuItem
             // 
             this.showCtrlToolStripMenuItem.Name = "showCtrlToolStripMenuItem";
-            this.showCtrlToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showCtrlToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.showCtrlToolStripMenuItem.Text = "Show";
             this.showCtrlToolStripMenuItem.Click += new System.EventHandler(this.showCtrlToolStripMenuItem_Click);
             // 
             // hideCtrlToolStripMenuItem
             // 
             this.hideCtrlToolStripMenuItem.Name = "hideCtrlToolStripMenuItem";
-            this.hideCtrlToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hideCtrlToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.hideCtrlToolStripMenuItem.Text = "Hide";
             this.hideCtrlToolStripMenuItem.Click += new System.EventHandler(this.hideCtrlToolStripMenuItem_Click);
             // 
@@ -514,6 +523,7 @@ namespace VideoGraphSample
         private System.Windows.Forms.ToolStripMenuItem controlPanelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showCtrlToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hideCtrlToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuItemOpen;
     }
 }
 

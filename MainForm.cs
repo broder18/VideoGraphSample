@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
-namespace VideoGraphSample
+namespace BIONVideoPlayer
 {
     public partial class MainForm : Form
     {
@@ -19,7 +20,7 @@ namespace VideoGraphSample
         private Point[] _rendererLocations;
 
         private int _focusedItemIdx = -1;
-        private List<IntPtr> _visiblerenderers;
+        private List<IntPtr> _visibleRenderers;
 
         public MainForm()
         {
@@ -343,24 +344,24 @@ namespace VideoGraphSample
 
         private void menuItemTileFitToDesktop_Click(object sender, EventArgs e)
         {
-            var visrenderers = GetVisibleRenderers();
-            if (visrenderers == null || visrenderers.Length < 2) return;
+            var visibleRenderers = GetVisibleRenderers();
+            if (visibleRenderers == null || visibleRenderers.Length < 2) return;
 
             var desktop = Screen.PrimaryScreen.WorkingArea;
-            var numrows = (visrenderers.Length + Defines.GridSize - 1) / Defines.GridSize;
+            var numRows = (visibleRenderers.Length + Defines.GridSize - 1) / Defines.GridSize;
 
-            var rend = visrenderers[0];
+            var rend = visibleRenderers[0];
 
             var diff = rend.GetWindowVideoDifference();
 
             var maxWindowW = desktop.Width / Defines.GridSize;
-            var maxWindowH = desktop.Height / numrows;
+            var maxWindowH = desktop.Height / numRows;
             var maxVideoW = maxWindowW - diff.Width;
             var maxVideoH = maxWindowH - diff.Height;
 
-            var useH = visrenderers[0].W2H(maxWindowW) > maxVideoH;
+            var useH = visibleRenderers[0].W2H(maxWindowW) > maxVideoH;
 
-            foreach (var r in visrenderers)
+            foreach (var r in visibleRenderers)
             {
                 if (useH) r.SetVideoHeight(maxVideoH);
                 else r.SetVideoWidth(maxVideoW);
@@ -374,22 +375,22 @@ namespace VideoGraphSample
                 var y = row * rendH;
                 for (var col = 0; col < Defines.GridSize; col++)
                 {
-                    if (i >= visrenderers.Length) break;
+                    if (i >= visibleRenderers.Length) break;
 
                     var x = col * rendW;
-                    visrenderers[i].Left = x;
-                    visrenderers[i].Top = y;
+                    visibleRenderers[i].Left = x;
+                    visibleRenderers[i].Top = y;
                     i++;
                 }
 
-                if (i >= visrenderers.Length) break;
+                if (i >= visibleRenderers.Length) break;
             }
         }
 
         private void menuItemTileFit1X_click(object sender, EventArgs e)
         {
-            var visrenderers = GetVisibleRenderers();
-            if (visrenderers == null || visrenderers.Length < 2) return;
+            var visibleRenderers = GetVisibleRenderers();
+            if (visibleRenderers == null || visibleRenderers.Length < 2) return;
 
             var scale = GetMenuItemScale(sender);
             if (scale <= 0) return;
@@ -397,25 +398,25 @@ namespace VideoGraphSample
             var w = Defines.VideoW / scale;
             var h = Defines.VideoH / scale;
 
-            foreach(var rend in visrenderers) rend.SetVideoSize(w, h);
+            foreach(var rend in visibleRenderers) rend.SetVideoSize(w, h);
 
             var i = 0;
-            var rendW = visrenderers[0].Width;
-            var rendH = visrenderers[0].Height;
+            var rendW = visibleRenderers[0].Width;
+            var rendH = visibleRenderers[0].Height;
             for (var row = 0; row < Defines.GridSize; row++)
             {
                 var y = row * rendH;
                 for (var col = 0; col < Defines.GridSize; col++)
                 {
-                    if (i >= visrenderers.Length) break;
+                    if (i >= visibleRenderers.Length) break;
 
                     var x = col * rendW;
-                    visrenderers[i].Left = x;
-                    visrenderers[i].Top = y;
+                    visibleRenderers[i].Left = x;
+                    visibleRenderers[i].Top = y;
                     i++;
                 }
 
-                if (i >= visrenderers.Length) break;
+                if (i >= visibleRenderers.Length) break;
             }
         }
 
@@ -428,8 +429,7 @@ namespace VideoGraphSample
         {
             using (var frm = new SetupForm())
             {
-                if ((frm.ShowDialog() != DialogResult.OK) || frm.FilePath == null) return;
-                Start(frm.FilePath);
+                if (frm.ShowDialog() == DialogResult.OK) return;
             }
         }
 
@@ -461,26 +461,33 @@ namespace VideoGraphSample
 
         private void menuItemDisableAllButThis_Click(object sender, EventArgs e)
         {
-            var selitem = StatisticsList.FocusedItem;
-            if (selitem == null) return;
+            var listFocusedItem = StatisticsList.FocusedItem;
+            if (listFocusedItem == null) return;
             foreach (ListViewItem item in StatisticsList.Items)
             {
-                item.Checked = item == selitem;
+                item.Checked = item == listFocusedItem;
             }
         }
 
         private void menuItemHideAllButThis_Click(object sender, EventArgs e)
         {
-            var selrend = GetSelectedRenderer();
-            if (selrend == null) return;
+            var selectedRenderer = GetSelectedRenderer();
+            if (selectedRenderer == null) return;
 
             foreach (var rend in _renderers)
             {
-                if (rend == selrend) continue;
+                if (rend == selectedRenderer) continue;
                 var item = FindRendererItem(rend);
                 if (item != null) item.Checked = false;
                 NativeMethods.HideNa(rend);
             }
+        }
+
+        private void menuItemOpen_Click(object sender, EventArgs e)
+        {
+            var pathFileDialog = new OpenFileDialog {Title = @"Выберите файл", Filter = @"Video files(*.ts)|*.ts"};
+            if (pathFileDialog.ShowDialog() != DialogResult.OK) return;
+            Start(pathFileDialog.FileName);
         }
 
         #endregion
@@ -526,17 +533,17 @@ namespace VideoGraphSample
 
         private void RendererActivated(object sender, EventArgs e)
         {
-            var currend = GetSelectedRenderer();
-            if (currend == null || currend == sender) return;
+            var selectedRenderer = GetSelectedRenderer();
+            if (selectedRenderer == null || selectedRenderer == sender) return;
 
-            var newitem = FindRendererItem(sender);
-            if (newitem == null) return;
+            var item = FindRendererItem(sender);
+            if (item == null) return;
         }
 
         private void RendererHidden(object sender, EventArgs e)
         {
-            var newitem = FindRendererItem(sender);
-            if (newitem != null) newitem.Checked = false;
+            var item = FindRendererItem(sender);
+            if (item != null) item.Checked = false;
         }
         #endregion
 
@@ -707,22 +714,22 @@ namespace VideoGraphSample
                 case FormWindowState.Minimized:
                     var hwnds = GetRendererHandles();
                     Utils.GetZOrderedForms(ref hwnds);
-                    _visiblerenderers = new List<IntPtr>();
+                    _visibleRenderers = new List<IntPtr>();
                     foreach (var hwnd in hwnds)
                     {
                         if (NativeMethods.IsWindowVisible(hwnd))
                         {
-                            _visiblerenderers.Add(hwnd);
+                            _visibleRenderers.Add(hwnd);
                             NativeMethods.HideNa(hwnd);
                         }
                     }
                     break;
 
                 case FormWindowState.Normal:
-                    if (_visiblerenderers != null)
+                    if (_visibleRenderers != null)
                     {
-                        foreach (var hwnd in _visiblerenderers) NativeMethods.ShowNa(hwnd);
-                        _visiblerenderers = null;
+                        foreach (var hwnd in _visibleRenderers) NativeMethods.ShowNa(hwnd);
+                        _visibleRenderers = null;
                     }
                     break;
             }
@@ -751,8 +758,9 @@ namespace VideoGraphSample
             
         }
 
+
         #endregion
 
-        
+
     }
 }
